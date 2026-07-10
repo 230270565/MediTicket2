@@ -4,17 +4,8 @@ import za.ac.cput.domain.user.ClinicStaff;
 
 import java.util.List;
 
-public interface IClinicStaffService {
+public interface IClinicStaffService extends IService<ClinicStaff,Integer> {
 
-    ClinicStaff create(ClinicStaff clinicStaff);
-
-    ClinicStaff read(Integer id);
-
-    ClinicStaff update(ClinicStaff clinicStaff);
-
-    void delete(Integer id);
-
-    List<ClinicStaff> getAll();
 
     ClinicStaff findByEmail(String email);
 
