@@ -111,14 +111,9 @@ public class NotificationController {
 
     @PutMapping("/markread/{id}")
     public ResponseEntity<Notification> markAsRead(@PathVariable int id) {
-
-        // TEMPORARY DEBUGGING
-        System.out.println(">>> MARKREAD CONTROLLER REACHED, ID = " + id);
-
         Notification notification = notificationService.read(id);
 
         if (notification == null) {
-            System.out.println(">>> MARKREAD: NOTIFICATION NOT FOUND");
             return ResponseEntity.notFound().build();
         }
 
@@ -134,8 +129,6 @@ public class NotificationController {
                 .setTicket(notification.getTicket())
                 .setAppointment(notification.getAppointment())
                 .build();
-
-        System.out.println(">>> MARKREAD: ATTEMPTING DATABASE UPDATE");
 
         return ResponseEntity.ok(notificationService.update(updated));
     }
