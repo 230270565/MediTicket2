@@ -3,13 +3,18 @@ package za.ac.cput.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.Appointment;
+import za.ac.cput.domain.Notification;
 import za.ac.cput.domain.PatientTicket;
 import za.ac.cput.domain.enums.ConfirmationStatus;
+import za.ac.cput.domain.enums.NotificationStatus;
+import za.ac.cput.domain.enums.NotificationType;
 import za.ac.cput.domain.enums.StatusType;
+import za.ac.cput.factory.NotificationFactory;
 import za.ac.cput.repository.AppointmentRepository;
 import za.ac.cput.repository.PatientTicketRepository;
 import za.ac.cput.service.impl.IPatientTicketService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,6 +30,11 @@ public class PatientTicketService implements IPatientTicketService {
     // PatientTicket's table without going through its service layer.
     @Autowired
     private AppointmentRepository appointmentRepository;
+
+    // NotificationService only depends on its repository, so injecting it
+    // here creates no circular dependency.
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public PatientTicket create(PatientTicket ticket) {
@@ -71,10 +81,18 @@ public class PatientTicketService implements IPatientTicketService {
         PatientTicket ticket = read(ticketId);
         if (ticket == null) return null;
 
+        boolean wasResolved = ticket.getCurrentStatus() == StatusType.RESOLVED;
+
         ticket.addStatus(newStatus, notes);
         PatientTicket saved = repository.save(ticket);
 
         completeAppointmentIfResolved(saved);
+
+        // Only on the transition into RESOLVED, so a repeat call doesn't
+        // send the nurse a second "ready for payment" notification.
+        if (newStatus == StatusType.RESOLVED && !wasResolved) {
+            notifyStaffConsultationComplete(saved);
+        }
 
         return saved;
     }
@@ -83,6 +101,31 @@ public class PatientTicketService implements IPatientTicketService {
     public PatientTicket findByAppointment(Appointment appointment) {
         if (appointment == null) return null;
         return repository.findByAppointment(appointment);
+    }
+
+    // The nurse/admin who approved the appointment generates the payment,
+    // so they are the one told the consultation has ended.
+    private void notifyStaffConsultationComplete(PatientTicket ticket) {
+        Appointment appointment = ticket.getAppointment();
+        if (appointment == null || appointment.getStaff() == null) return;
+
+        String message = "Consultation complete for ticket TK-"
+                + String.format("%03d", ticket.getTicketId())
+                + ". The ticket is ready for a payment request.";
+
+        Notification notification = NotificationFactory.createNotification(
+                0,
+                NotificationType.EMAIL,
+                NotificationStatus.PENDING,
+                message,
+                null,
+                null,
+                appointment.getStaff(),
+                ticket,
+                appointment,
+                LocalDateTime.now()
+        );
+        if (notification != null) notificationService.create(notification);
     }
 
     // NEW — when the doctor resolves the ticket, the linked appointment is

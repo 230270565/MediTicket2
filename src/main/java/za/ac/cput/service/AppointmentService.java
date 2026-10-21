@@ -46,7 +46,14 @@ public class AppointmentService implements IAppointmentService {
     @Override
     public Appointment create(Appointment appointment) {
         if (appointment == null) return null;
-        return repository.save(appointment);
+        Appointment saved = repository.save(appointment);
+
+        // A new PENDING request needs a nurse or admin to act on it.
+        if (saved.getConfirmationStatus() == ConfirmationStatus.PENDING) {
+            notifyStaffOfNewBooking(saved);
+        }
+
+        return saved;
     }
 
     @Override
@@ -135,7 +142,8 @@ public class AppointmentService implements IAppointmentService {
                 .setPatient(patient)
                 .setAppointment(confirmed)
                 .build();
-        ticket.addStatus(StatusType.OPEN);
+        // OPEN is added inside patientTicketService.create() — adding it here
+        // too gave every ticket two OPEN entries in its history.
         ticket = patientTicketService.create(ticket);
 
         // Step 3: notify patient + doctor
@@ -171,6 +179,28 @@ public class AppointmentService implements IAppointmentService {
     }
 
     // ===== Private notification helpers =====
+
+    private void notifyStaffOfNewBooking(Appointment appointment) {
+        String when = appointment.getAppointmentDate()
+                + (appointment.getAppointmentTime() != null ? " at " + appointment.getAppointmentTime() : "");
+        String message = "New appointment request for " + when + " is waiting for approval.";
+
+        for (ClinicStaff staff : clinicStaffService.getAll()) {
+            Notification notification = NotificationFactory.createNotification(
+                    0,
+                    NotificationType.EMAIL,
+                    NotificationStatus.PENDING,
+                    message,
+                    null,
+                    null,
+                    staff,
+                    null,
+                    appointment,
+                    LocalDateTime.now()
+            );
+            if (notification != null) notificationService.create(notification);
+        }
+    }
 
     private void notifyAppointmentConfirmed(Patient patient, Doctor doctor, PatientTicket ticket, Appointment appointment) {
         Notification patientNotification = NotificationFactory.createNotification(
