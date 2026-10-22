@@ -3,18 +3,13 @@ package za.ac.cput.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.Appointment;
-import za.ac.cput.domain.Notification;
 import za.ac.cput.domain.PatientTicket;
 import za.ac.cput.domain.enums.ConfirmationStatus;
-import za.ac.cput.domain.enums.NotificationStatus;
-import za.ac.cput.domain.enums.NotificationType;
 import za.ac.cput.domain.enums.StatusType;
-import za.ac.cput.factory.NotificationFactory;
 import za.ac.cput.repository.AppointmentRepository;
 import za.ac.cput.repository.PatientTicketRepository;
 import za.ac.cput.service.impl.IPatientTicketService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -109,23 +104,14 @@ public class PatientTicketService implements IPatientTicketService {
         Appointment appointment = ticket.getAppointment();
         if (appointment == null || appointment.getStaff() == null) return;
 
-        String message = "Consultation complete for ticket TK-"
+        String patient = ticket.getPatient() != null && ticket.getPatient().getName() != null
+                ? ticket.getPatient().getName().getFirstName() + " " + ticket.getPatient().getName().getLastName()
+                : "the patient";
+        String message = "Consultation complete for " + patient + " (ticket TK-"
                 + String.format("%03d", ticket.getTicketId())
-                + ". The ticket is ready for a payment request.";
+                + "). The ticket is ready for a payment request.";
 
-        Notification notification = NotificationFactory.createNotification(
-                0,
-                NotificationType.EMAIL,
-                NotificationStatus.PENDING,
-                message,
-                null,
-                null,
-                appointment.getStaff(),
-                ticket,
-                appointment,
-                LocalDateTime.now()
-        );
-        if (notification != null) notificationService.create(notification);
+        notificationService.notifyStaff(appointment.getStaff(), message, "TICKET_RESOLVED", ticket, appointment);
     }
 
     // NEW — when the doctor resolves the ticket, the linked appointment is
@@ -136,7 +122,14 @@ public class PatientTicketService implements IPatientTicketService {
             return;
         }
 
-        Appointment appointment = ticket.getAppointment();
+        // BUG FIX — ticket.getAppointment() is a lazy Hibernate proxy. Appointment.Builder.copy()
+        // used to read fields directly, and a proxy's own fields are empty, so the copy was blank:
+        // save() inserted a new empty appointment row and the real one stayed CONFIRMED.
+        // copy() now uses getters; reloading by id here is a second safeguard.
+        Appointment appointment = appointmentRepository
+                .findById(ticket.getAppointment().getAppointmentId())
+                .orElse(null);
+        if (appointment == null) return;
         if (appointment.getConfirmationStatus() == ConfirmationStatus.COMPLETED) {
             return; // already completed — nothing to do
         }
