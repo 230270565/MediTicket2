@@ -29,18 +29,21 @@ public class AppointmentService implements IAppointmentService {
     private final ClinicStaffService clinicStaffService;
     private final PatientTicketService patientTicketService;
     private final NotificationService notificationService;
+    private final za.ac.cput.repository.PatientRepository patientRepository;
 
     @Autowired
     public AppointmentService(AppointmentRepository repository,
                               DoctorService doctorService,
                               ClinicStaffService clinicStaffService,
                               PatientTicketService patientTicketService,
-                              NotificationService notificationService) {
+                              NotificationService notificationService,
+                              za.ac.cput.repository.PatientRepository patientRepository) {
         this.repository = repository;
         this.doctorService = doctorService;
         this.clinicStaffService = clinicStaffService;
         this.patientTicketService = patientTicketService;
         this.notificationService = notificationService;
+        this.patientRepository = patientRepository;
     }
 
     @Override
@@ -179,76 +182,60 @@ public class AppointmentService implements IAppointmentService {
     }
 
     // ===== Private notification helpers =====
+    // Messages name the people and the slot so they make sense on their own,
+    // in the app and in the email copy.
+
+    private static final java.time.format.DateTimeFormatter DAY =
+            java.time.format.DateTimeFormatter.ofPattern("d MMM yyyy");
+
+    private static String slot(Appointment a) {
+        if (a == null || a.getAppointmentDate() == null) return "your requested date";
+        String day = a.getAppointmentDate().format(DAY);
+        return a.getAppointmentTime() != null ? day + " at " + a.getAppointmentTime() : day;
+    }
+
+    private static String fullName(za.ac.cput.domain.user.User user) {
+        if (user == null || user.getName() == null) return "the patient";
+        String first = user.getName().getFirstName() != null ? user.getName().getFirstName() : "";
+        String last = user.getName().getLastName() != null ? user.getName().getLastName() : "";
+        return (first + " " + last).trim();
+    }
 
     private void notifyStaffOfNewBooking(Appointment appointment) {
-        String when = appointment.getAppointmentDate()
-                + (appointment.getAppointmentTime() != null ? " at " + appointment.getAppointmentTime() : "");
-        String message = "New appointment request for " + when + " is waiting for approval.";
+        // The request body only carries the patient's id, so load the patient for the name.
+        Patient patient = appointment.getPatient();
+        String who = patient != null ? fullName(patientName(patient.getUserId())) : "A patient";
+        String message = who + " requested an appointment for " + slot(appointment)
+                + ". It is waiting for approval.";
 
         for (ClinicStaff staff : clinicStaffService.getAll()) {
-            Notification notification = NotificationFactory.createNotification(
-                    0,
-                    NotificationType.EMAIL,
-                    NotificationStatus.PENDING,
-                    message,
-                    null,
-                    null,
-                    staff,
-                    null,
-                    appointment,
-                    LocalDateTime.now()
-            );
-            if (notification != null) notificationService.create(notification);
+            notificationService.notifyStaff(staff, message, "APPOINTMENT_PENDING", null, appointment);
         }
     }
 
-    private void notifyAppointmentConfirmed(Patient patient, Doctor doctor, PatientTicket ticket, Appointment appointment) {
-        Notification patientNotification = NotificationFactory.createNotification(
-                0,
-                NotificationType.EMAIL,
-                NotificationStatus.PENDING,
-                "Your appointment has been confirmed. A ticket has been opened for your visit.",
-                patient,
-                null,
-                null,
-                ticket,
-                appointment,
-                LocalDateTime.now()
-        );
-        if (patientNotification != null) notificationService.create(patientNotification);
+    private za.ac.cput.domain.user.User patientName(int patientId) {
+        return patientRepository.findById(patientId).orElse(null);
+    }
 
-        Notification doctorNotification = NotificationFactory.createNotification(
-                0,
-                NotificationType.EMAIL,
-                NotificationStatus.PENDING,
-                "A new appointment has been assigned to you.",
-                null,
-                doctor,
-                null,
-                ticket,
-                appointment,
-                LocalDateTime.now()
-        );
-        if (doctorNotification != null) notificationService.create(doctorNotification);
+    private void notifyAppointmentConfirmed(Patient patient, Doctor doctor, PatientTicket ticket, Appointment appointment) {
+        String ticketRef = ticket != null ? " Ticket TK-" + String.format("%03d", ticket.getTicketId()) + " is open." : "";
+
+        notificationService.notifyPatient(patient,
+                "Your appointment on " + slot(appointment) + " with Dr. " + doctor.getName().getLastName()
+                        + " is confirmed." + ticketRef,
+                "TICKET_OPEN", ticket, appointment, "Appointment confirmed");
+
+        notificationService.notifyDoctor(doctor,
+                "New appointment assigned: " + fullName(patient) + ", " + slot(appointment) + "." + ticketRef,
+                "TICKET_OPEN", ticket, appointment, "New appointment assigned");
     }
 
     private void notifyAppointmentRejected(Patient patient, String reason, Appointment appointment) {
         String message = (reason == null || reason.isBlank())
-                ? "Your appointment request could not be approved. Please contact the clinic for details."
-                : "Your appointment request could not be approved: " + reason;
+                ? "Your appointment request for " + slot(appointment) + " could not be approved. Please contact the clinic for details."
+                : "Your appointment request for " + slot(appointment) + " could not be approved: " + reason;
 
-        Notification notification = NotificationFactory.createNotification(
-                0,
-                NotificationType.EMAIL,
-                NotificationStatus.PENDING,
-                message,
-                patient,
-                null,
-                null,
-                null,
-                appointment,
-                LocalDateTime.now()
-        );
-        if (notification != null) notificationService.create(notification);
+        notificationService.notifyPatient(patient, message, "APPOINTMENT_REJECTED",
+                null, appointment, "Appointment request not approved");
     }
 }

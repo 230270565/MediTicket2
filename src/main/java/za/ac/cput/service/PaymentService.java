@@ -13,21 +13,16 @@ package za.ac.cput.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.Appointment;
-import za.ac.cput.domain.Notification;
 import za.ac.cput.domain.Payment;
 import za.ac.cput.domain.PatientTicket;
-import za.ac.cput.domain.enums.NotificationStatus;
-import za.ac.cput.domain.enums.NotificationType;
 import za.ac.cput.domain.enums.PaymentMethod;
 import za.ac.cput.domain.enums.PaymentStatus;
 import za.ac.cput.domain.enums.StatusType;
-import za.ac.cput.factory.NotificationFactory;
 import za.ac.cput.repository.AppointmentRepository;
 import za.ac.cput.repository.PatientTicketRepository;
 import za.ac.cput.repository.PaymentRepository;
 import za.ac.cput.service.impl.IPaymentService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -58,9 +53,11 @@ public class PaymentService implements IPaymentService {
         if (payment == null) return null;
         Payment saved = repository.save(payment);
 
-        String method = saved.getPaymentMethod() != null ? " by " + saved.getPaymentMethod() : "";
+        String method = saved.getPaymentMethod() != null
+                ? " by " + saved.getPaymentMethod().name().replace('_', ' ')
+                : "";
         notifyPatient(saved, "A payment of R" + saved.getPaymentAmount() + " is due" + method
-                + ". You can pay it from your Payments page.");
+                + ". You can pay it from your Payments page.", "PAYMENT_DUE", "Payment due");
 
         return saved;
     }
@@ -115,10 +112,10 @@ public class PaymentService implements IPaymentService {
 
         // Inside the "not already closed" branch, so it is sent once only.
         notifyPatient(payment, "Payment of R" + payment.getPaymentAmount()
-                + " received. Your ticket has been closed. Thank you.");
+                + " received. Your ticket has been closed. Thank you.", "TICKET_CLOSED", "Payment received");
     }
 
-    private void notifyPatient(Payment payment, String message) {
+    private void notifyPatient(Payment payment, String message, String stage, String emailSubject) {
         if (payment.getAppointment() == null) return;
 
         Appointment appointment = appointmentRepository
@@ -127,19 +124,7 @@ public class PaymentService implements IPaymentService {
         if (appointment == null || appointment.getPatient() == null) return;
 
         PatientTicket ticket = patientTicketRepository.findByAppointment(appointment);
-
-        Notification notification = NotificationFactory.createNotification(
-                0,
-                NotificationType.EMAIL,
-                NotificationStatus.PENDING,
-                message,
-                appointment.getPatient(),
-                null,
-                null,
-                ticket,
-                appointment,
-                LocalDateTime.now()
-        );
-        if (notification != null) notificationService.create(notification);
+        notificationService.notifyPatient(appointment.getPatient(), message, stage,
+                ticket, appointment, emailSubject);
     }
 }
