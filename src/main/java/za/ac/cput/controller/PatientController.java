@@ -1,3 +1,13 @@
+/*
+ PatientController.java
+
+ REST controller for Patient
+
+ Author: Aidan Barends (230255639)
+
+ Date: 13th July 2026
+*/
+
 package za.ac.cput.controller;
 
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +22,6 @@ import java.util.List;
 public class PatientController {
 
     private final PatientService patientService;
-
 
     public PatientController(PatientService patientService) {
         this.patientService = patientService;

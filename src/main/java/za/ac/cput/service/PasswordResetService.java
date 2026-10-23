@@ -1,3 +1,13 @@
+/*
+ PasswordResetService.java
+
+ Service class for PasswordReset
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 14th August 2026
+*/
+
 package za.ac.cput.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,15 +58,13 @@ public class PasswordResetService implements IPasswordResetService {
 
     @Override
     public boolean requestReset(String email) {
-        // Deliberately do NOT reveal whether the email exists — check
-        // internally, but always return true so the controller's response
-        // wording is identical either way (account enumeration protection).
+        // Don't say if the email exists, so nobody can check for accounts.
         boolean userExists = patientService.findByEmail(email).isPresent()
                 || doctorService.findByEmail(email).isPresent()
                 || clinicStaffService.findByEmail(email).isPresent();
 
         if (!userExists) {
-            return true; // silently no-op — nobody to email
+            return true; // no account, nothing to email
         }
 
         String rawCode = generateCode();
@@ -149,9 +157,7 @@ public class PasswordResetService implements IPasswordResetService {
         return String.valueOf(code);
     }
 
-    // Mirrors AuthService.changePassword()'s three-way lookup, but without
-    // the oldPassword check — the reset flow's proof-of-identity is the
-    // verified code, not the current password.
+    // Like changePassword() but without the old password, the verified code is the proof.
     private boolean updatePasswordForEmail(String email, String newPassword) {
         Optional<Patient> patientOpt = patientService.findByEmail(email);
         if (patientOpt.isPresent()) {
@@ -186,6 +192,6 @@ public class PasswordResetService implements IPasswordResetService {
             return true;
         }
 
-        return false; // shouldn't happen — requestReset() already confirmed existence
+        return false; // should not happen, requestReset() already checked the email
     }
 }

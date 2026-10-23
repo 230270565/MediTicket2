@@ -3,7 +3,7 @@
 
  Patient POJO class
 
- Author: Aidan Barends (230155639)
+ Author: Aidan Barends (230255639)
 
  Date: 21st June 2026
 */
@@ -46,7 +46,6 @@ public class Patient extends User {
     public UserType getUserType(){
         return UserType.PATIENT;
     }
-
 
     @Override
     public String toString() {

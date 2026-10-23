@@ -1,3 +1,13 @@
+/*
+ TicketStatusFactory.java
+
+ Factory class for TicketStatus
+
+ Author: Abdullahi Raage Farah (230971091)
+
+ Date: 22nd June 2026
+*/
+
 package za.ac.cput.factory;
 
 import za.ac.cput.domain.PatientTicket;

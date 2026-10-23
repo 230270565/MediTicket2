@@ -1,3 +1,13 @@
+/*
+ DoctorFactory.java
+
+ Factory class for Doctor
+
+ Author: Jaden Clayton Abrahams (222206721)
+
+ Date: 22nd June 2026
+*/
+
 package za.ac.cput.factory;
 
 import za.ac.cput.domain.enums.UserStatus;

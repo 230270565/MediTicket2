@@ -3,7 +3,7 @@
 
  Repository interface for Payment
 
- Author: Abdullahi Farah (230971091)
+ Author: Abdullahi Raage Farah (230971091)
 
  Date: 5th July 2026
 */
@@ -24,8 +24,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
     List<Payment> findByPaymentMethod(PaymentMethod paymentMethod);
 
-    // NEW — Payment has a unique FK to Appointment, so patient cascade delete
-    // needs to clear these first or the appointment delete fails on the FK.
+    // Used when deleting a patient. Payments have to go before the appointments.
     List<Payment> findByAppointmentIn(List<Appointment> appointments);
 
 }

@@ -1,3 +1,13 @@
+/*
+ PatientService.java
+
+ Service class for Patient
+
+ Author: Aidan Barends (230255639)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,14 +85,8 @@ public class PatientService implements IPatientService {
         return this.patientRepository.save(updated);
     }
 
-    // Patients have four dependent record types: Appointment, PatientTicket,
-    // Notification (referencing patient/appointment/ticket), and Payment
-    // (referencing appointment). None of that is set up to cascade at the
-    // DB or entity level, so a raw deleteById() throws a foreign-key error
-    // the moment a patient has any history. Deleting in leaf-to-root order
-    // (notifications -> payments -> tickets -> appointments -> patient)
-    // avoids that. TicketStatus rows are still handled automatically via
-    // PatientTicket's own cascade=ALL/orphanRemoval mapping.
+    // Delete the patient's records first (notifications, payments, tickets, appointments)
+    // or the foreign keys stop the delete.
     @Override
     @Transactional
     public void delete(Integer id) {

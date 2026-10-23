@@ -1,3 +1,13 @@
+/*
+ DoctorControllerTest.java
+
+ Test class for DoctorController
+
+ Author: Jaden Clayton Abrahams (222206721)
+
+ Date: 13th July 2026
+*/
+
 package za.ac.cput.controller;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +60,7 @@ class DoctorControllerTest {
                 .build();
     }
 
-    // ---------- create ----------
+    // create
 
     @Test
     void create_ShouldReturnCreatedDoctor() {
@@ -66,7 +76,7 @@ class DoctorControllerTest {
         verify(doctorService, times(1)).create(doctor);
     }
 
-    // ---------- read ----------
+    // read
 
     @Test
     void read_ShouldReturnDoctor_WhenIdExists() {
@@ -93,7 +103,7 @@ class DoctorControllerTest {
         verify(doctorService, times(1)).read(id);
     }
 
-    // ---------- update ----------
+    // update
 
     @Test
     void update_ShouldReturnUpdatedDoctor_WhenExists() {
@@ -130,7 +140,7 @@ class DoctorControllerTest {
         verify(doctorService, never()).update(any());
     }
 
-    // ---------- delete ----------
+    // delete
 
     @Test
     void delete_ShouldReturnNoContent_WhenExists() {
@@ -157,7 +167,7 @@ class DoctorControllerTest {
         verify(doctorService, never()).delete(anyInt());
     }
 
-    // ---------- getAll ----------
+    // getAll
 
     @Test
     void getAll_ShouldReturnListOfDoctors() {
@@ -195,7 +205,7 @@ class DoctorControllerTest {
         verify(doctorService, times(1)).getAll();
     }
 
-    // ---------- findByEmail ----------
+    // findByEmail
 
     @Test
     void findByEmail_ShouldReturnDoctor_WhenEmailExists() {

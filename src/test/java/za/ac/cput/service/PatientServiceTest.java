@@ -1,3 +1,13 @@
+/*
+ PatientServiceTest.java
+
+ Test class for PatientService
+
+ Author: Aidan Barends (230255639)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service;
 
 import static org.junit.jupiter.api.Assertions.*;

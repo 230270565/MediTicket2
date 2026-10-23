@@ -1,3 +1,13 @@
+/*
+ ClinicStaffFactoryTest.java
+
+ Test class for ClinicStaffFactory
+
+ Author: Matthew Barron (230398863)
+
+ Date: 22nd June 2026
+*/
+
 package za.ac.cput.factory;
 
 import org.junit.jupiter.api.Test;

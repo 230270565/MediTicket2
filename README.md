@@ -154,11 +154,11 @@ src/main/java/za/ac/cput/
 |------------------------|----------------|---------------------------------|
 | Joshua Reid Adams      | 230317693      | PatientTicket, User (Team Lead) |
 | Abdullahi Raage Farah  | 230971091      | Payment, TicketStatus           |
-| Aidan Barends          | 230155639      | Patient                         |
+| Aidan Barends          | 230255639      | Patient                         |
 | Jaden Clayton Abrahams | 222206721      | Doctor                          |
 | Joshua Peter Bonzet    | 221312536      | Appointment                     |
 | Matthew Barron         | 230398863      | ClinicStaff                     |
-| Raul Jaaim Everts      | 230270564      | Notification                    |
+| Raul Jaaim Everts      | 230270565      | Notification                    |
 
 ---
 

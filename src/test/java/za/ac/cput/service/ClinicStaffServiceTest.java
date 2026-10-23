@@ -1,3 +1,13 @@
+/*
+ ClinicStaffServiceTest.java
+
+ Test class for ClinicStaffService
+
+ Author: Matthew Barron (230398863)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service;
 
 import static org.junit.jupiter.api.Assertions.*;

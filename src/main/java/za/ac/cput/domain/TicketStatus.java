@@ -1,3 +1,13 @@
+/*
+ TicketStatus.java
+
+ TicketStatus entity class
+
+ Author: Abdullahi Raage Farah (230971091)
+
+ Date: 20th June 2026
+*/
+
 package za.ac.cput.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -23,7 +33,6 @@ public class TicketStatus {
     @JoinColumn(name = "ticket_id")
     @JsonBackReference
     private PatientTicket ticket;
-
 
     @Column(length = 2000)
     private String notes;

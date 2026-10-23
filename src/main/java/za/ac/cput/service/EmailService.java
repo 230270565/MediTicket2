@@ -1,3 +1,13 @@
+/*
+ EmailService.java
+
+ Service class for Email
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,10 +95,8 @@ public class EmailService implements IEmailService {
         mailSender.send(message);
     }
 
-    // NEW — email copy of an in-app notification. Runs on a background thread
-    // (@Async, enabled in MediTicket02Application) so the HTTP request that
-    // triggered it returns immediately instead of waiting 2-5 s for SMTP.
-    // A failed send is logged and never breaks the action that caused it.
+    // Emails a copy of a notification. Runs in the background so the request doesn't wait for Gmail.
+    // If it fails we just log it.
     @Async
     public void sendNotificationEmail(int notificationId, String toEmail, String firstName,
                                       String subject, String body) {

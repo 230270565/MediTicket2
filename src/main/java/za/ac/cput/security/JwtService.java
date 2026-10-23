@@ -1,3 +1,13 @@
+/*
+ JwtService.java
+
+ Service class for Jwt
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.security;
 
 import io.jsonwebtoken.Claims;
@@ -38,9 +48,8 @@ public class JwtService {
         return generateToken(userId, userType, null);
     }
 
-    //  Overload for ClinicStaff logins — embeds staffRole (NURSE/ADMIN) so
-    //  JwtAuthFilter can grant a ROLE_ADMIN authority without a DB lookup on
-    //  every request. Pass null staffRole for Patient/Doctor tokens.
+    // For staff logins. Adds the staffRole so the filter knows who is an admin.
+    // Pass null for patients and doctors.
     public String generateToken(int userId, String userType, String staffRole){
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtExpirationMs);
@@ -67,8 +76,7 @@ public class JwtService {
         return extractClaim(token, claims -> claims.get("userType", String.class));
     }
 
-    //  Returns null if the token has no staffRole claim (Patient/Doctor tokens,
-    //  or any token issued before this field existed)
+    // Null for patient and doctor tokens.
     public String extractStaffRole(String token){
         return extractClaim(token, claims -> claims.get("staffRole", String.class));
     }
@@ -89,11 +97,8 @@ public class JwtService {
         }
     }
 
-    //  Generates a JWT that carries an email + intended role (and staffRole,
-    //  for clinic staff invites), used for the Doctor/ClinicStaff signup-invite
-    //  link. No userId exists yet, so email is the subject instead. The
-    //  "purpose" claim stops this being usable as a normal access token, and
-    //  vice versa. Pass null staffRole for DOCTOR invites.
+    // Token for the doctor and staff signup invite. Holds the email and role.
+    // It can't be used to log in. Pass null staffRole for doctors.
     public String generateInviteToken(String email, UserType userType, StaffRole staffRole) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + inviteExpirationMs);
@@ -112,9 +117,7 @@ public class JwtService {
         return builder.signWith(getSigningKey()).compact();
     }
 
-    //  Parses and validates an invite token, returning the embedded email/role.
-    //  Returns null on any failure — expired, tampered, wrong purpose, or an
-    //  unrecognised userType/staffRole — so callers just need a single null check.
+    // Reads an invite token. Returns null if it is expired, changed or not an invite.
     public EmployeeInviteResponse parseInviteToken(String token) {
         try {
             Claims claims = extractAllClaims(token);
@@ -133,8 +136,7 @@ public class JwtService {
             return new EmployeeInviteResponse(email, userType, staffRole);
 
         } catch (JwtException | IllegalArgumentException e) {
-            // JwtException covers expired/malformed/bad-signature tokens;
-            // IllegalArgumentException covers UserType.valueOf()/StaffRole.valueOf() on a bad value
+            // Bad token or a role value that doesn't exist.
             return null;
         }
     }

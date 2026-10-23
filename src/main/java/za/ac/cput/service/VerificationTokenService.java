@@ -1,3 +1,13 @@
+/*
+ VerificationTokenService.java
+
+ Service class for VerificationToken
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.service;
 
 import jakarta.transaction.Transactional;
@@ -56,7 +66,7 @@ public class VerificationTokenService implements IVerificationTokenService {
     @Override
     @Transactional
     public VerificationToken generateAndSaveToken(int userId, UserType userType) {
-        // Enforce one active token per user — clear any existing one first
+        // One active token per user, so clear the old one first
         deleteExistingToken(userId, userType);
 
         VerificationToken token = new VerificationToken.Builder()

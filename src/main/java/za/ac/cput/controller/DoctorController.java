@@ -1,3 +1,13 @@
+/*
+ DoctorController.java
+
+ REST controller for Doctor
+
+ Author: Jaden Clayton Abrahams (222206721)
+
+ Date: 13th July 2026
+*/
+
 package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;

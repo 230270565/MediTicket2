@@ -43,7 +43,6 @@ public class Doctor extends User {
         return UserType.DOCTOR;
     }
 
-
     public String getSpecialty() {
         return specialty;
     }

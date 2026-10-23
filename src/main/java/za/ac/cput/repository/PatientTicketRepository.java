@@ -1,3 +1,13 @@
+/*
+ PatientTicketRepository.java
+
+ Repository interface for PatientTicket
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 29th June 2026
+*/
+
 package za.ac.cput.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,9 +24,7 @@ public interface PatientTicketRepository extends JpaRepository<PatientTicket, In
 
     List<PatientTicket> findByPatientUserId(int patientId);
 
-    // NEW — appointment is a @OneToOne field on PatientTicket. Used by
-    // PaymentService to find the ticket tied to a payment's appointment,
-    // so it can be auto-closed once the payment is confirmed PAID.
+    // Finds the ticket for an appointment, e.g. to close it once paid.
     PatientTicket findByAppointment(Appointment appointment);
 
 }

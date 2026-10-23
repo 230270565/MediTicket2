@@ -1,3 +1,13 @@
+/*
+ Notification.java
+
+ Notification entity class
+
+ Author: Raul Jaaim Everts (230270565)
+
+ Date: 20th June 2026
+*/
+
 package za.ac.cput.domain;
 
 import jakarta.persistence.*;
@@ -45,14 +55,11 @@ public class Notification {
 
     private LocalDateTime notificationDate;
 
-    // NEW — snapshot of the stage this notification is about, recorded at
-    // creation so an old notification keeps its meaning after the ticket moves
-    // on. Plain VARCHAR (not an enum column) so ddl-auto=update can add it to
-    // existing databases without a manual ALTER.
+    // The stage this notification is about (e.g. PAYMENT_DUE), saved when it is created.
     @Column(length = 40)
     private String relatedStatus;
 
-    // NEW — true once the notification was also delivered by email.
+    // True once the notification was also delivered by email.
     private Boolean emailSent;
 
     protected Notification() {
@@ -210,8 +217,6 @@ public class Notification {
             return this;
         }
 
-        // Stage of the appointment/ticket/payment this notification is about,
-        // recorded when it is created (e.g. TICKET_OPEN, PAYMENT_DUE).
         public Builder setRelatedStatus(String relatedStatus) {
             this.relatedStatus = relatedStatus;
             return this;

@@ -1,3 +1,13 @@
+/*
+ PatientRepository.java
+
+ Repository interface for Patient
+
+ Author: Aidan Barends (230255639)
+
+ Date: 29th June 2026
+*/
+
 package za.ac.cput.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +22,6 @@ import java.util.Optional;
 public interface PatientRepository extends JpaRepository <Patient, Integer> {
 
     List<Patient> findByDateRegistered(LocalDate dateRegistered);
-
 
     Patient findByEmail(String email);
 

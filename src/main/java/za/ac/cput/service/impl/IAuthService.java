@@ -1,3 +1,13 @@
+/*
+ IAuthService.java
+
+ Service interface for Auth
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.service.impl;
 
 import za.ac.cput.domain.enums.StaffRole;
@@ -30,7 +40,7 @@ public interface IAuthService {
 
     ClinicStaff signUpClinicStaff(ClinicStaffSignupRequest request);
 
-    // NEW — self-service request, gated by admin approval
+    // Self-service request, gated by admin approval
     boolean requestEmployeeAccess(String email, UserType userType, StaffRole staffRole);
 
     boolean approveAccessRequest(int requestId, int adminUserId);

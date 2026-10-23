@@ -1,3 +1,13 @@
+/*
+ AppointmentController.java
+
+ REST controller for Appointment
+
+ Author: Joshua Peter Bonzet (221312536)
+
+ Date: 13th July 2026
+*/
+
 package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;

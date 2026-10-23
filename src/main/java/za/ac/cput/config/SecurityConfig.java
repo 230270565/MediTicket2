@@ -1,3 +1,20 @@
+/*
+ SecurityConfig.java
+
+ Spring Security setup: JWT filter, public routes and role access
+
+ Authors:
+  Joshua Reid Adams (230317693)
+  Abdullahi Raage Farah (230971091)
+  Aidan Barends (230255639)
+  Jaden Clayton Abrahams (222206721)
+  Joshua Peter Bonzet (221312536)
+  Matthew Barron (230398863)
+  Raul Jaaim Everts (230270565)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +63,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Restricted: ADMIN only. Must come BEFORE the general
-                        // /api/auth/** permitAll below — Spring Security uses
-                        // the first matching rule.
+                        // Admin only. This has to stay above the /api/auth/** rule because the first match wins.
                         .requestMatchers("/api/auth/employee/invite").hasRole("ADMIN")
                         .requestMatchers("/api/auth/employee/access-requests/**").hasRole("ADMIN")
 

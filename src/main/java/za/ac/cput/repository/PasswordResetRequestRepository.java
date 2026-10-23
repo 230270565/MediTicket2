@@ -1,3 +1,13 @@
+/*
+ PasswordResetRequestRepository.java
+
+ Repository interface for PasswordResetRequest
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 14th August 2026
+*/
+
 package za.ac.cput.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,10 +17,6 @@ import java.util.List;
 
 public interface PasswordResetRequestRepository extends JpaRepository<PasswordResetRequest, Integer> {
 
-    // Most recent request for an email, regardless of state — used both at
-    // verify-code time (to find the pending code) and reset-password time
-    // (to find the verified session). Ordering + taking first in the service
-    // layer since "latest" isn't expressible as a single derived-query method
-    // without a Pageable.
+    // Newest reset request first. The service takes the first one.
     List<PasswordResetRequest> findByEmailOrderByCreatedDateDesc(String email);
 }

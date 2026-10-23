@@ -1,3 +1,13 @@
+/*
+ IRefreshTokenService.java
+
+ Service interface for RefreshToken
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.service.impl;
 
 import za.ac.cput.domain.auth.RefreshToken;

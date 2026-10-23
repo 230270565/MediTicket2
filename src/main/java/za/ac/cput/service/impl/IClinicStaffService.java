@@ -1,3 +1,13 @@
+/*
+ IClinicStaffService.java
+
+ Service interface for ClinicStaff
+
+ Author: Matthew Barron (230398863)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service.impl;
 
 import za.ac.cput.domain.enums.StaffRole;

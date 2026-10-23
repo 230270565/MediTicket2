@@ -1,3 +1,13 @@
+/*
+ PatientFactory.java
+
+ Factory class for Patient
+
+ Author: Aidan Barends (230255639)
+
+ Date: 22nd June 2026
+*/
+
 package za.ac.cput.factory;
 
 import za.ac.cput.domain.enums.UserStatus;

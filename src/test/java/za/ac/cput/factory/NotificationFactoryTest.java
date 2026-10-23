@@ -1,3 +1,13 @@
+/*
+ NotificationFactoryTest.java
+
+ Test class for NotificationFactory
+
+ Author: Raul Jaaim Everts (230270565)
+
+ Date: 22nd June 2026
+*/
+
 package za.ac.cput.factory;
 
 import org.junit.jupiter.api.BeforeEach;

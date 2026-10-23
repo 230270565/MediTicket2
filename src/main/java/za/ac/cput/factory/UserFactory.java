@@ -1,3 +1,13 @@
+/*
+ UserFactory.java
+
+ Factory class for User
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 22nd June 2026
+*/
+
 package za.ac.cput.factory;
 
 import za.ac.cput.domain.enums.UserStatus;

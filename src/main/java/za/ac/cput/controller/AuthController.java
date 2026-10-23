@@ -1,3 +1,13 @@
+/*
+ AuthController.java
+
+ REST controller for Auth
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.controller;
 
 import org.springframework.http.HttpStatus;
@@ -50,9 +60,7 @@ public class AuthController {
         this.passwordResetService = passwordResetService;
     }
 
-    // ============================================================
     // PATIENT SIGNUP
-    // ============================================================
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody PatientSignupRequest request) {
@@ -85,9 +93,7 @@ public class AuthController {
                 .body("Signup successful. Please check your email to verify your account.");
     }
 
-    // ============================================================
     // ACCOUNT VERIFICATION
-    // ============================================================
 
     @GetMapping("/verify")
     public ResponseEntity<?> verify(@RequestParam String token) {
@@ -104,9 +110,7 @@ public class AuthController {
         );
     }
 
-    // ============================================================
     // LOGIN
-    // ============================================================
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -125,9 +129,7 @@ public class AuthController {
         return ResponseEntity.ok(authResponse);
     }
 
-    // ============================================================
     // REFRESH TOKEN
-    // ============================================================
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(
@@ -161,9 +163,7 @@ public class AuthController {
         );
     }
 
-    // ============================================================
     // RESEND PATIENT VERIFICATION
-    // ============================================================
 
     @PostMapping("/resend-verification")
     public ResponseEntity<?> resendVerification(
@@ -184,9 +184,7 @@ public class AuthController {
         );
     }
 
-    // ============================================================
     // CHANGE PASSWORD
-    // ============================================================
 
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(
@@ -211,23 +209,8 @@ public class AuthController {
         );
     }
 
-
-
-    // ============================================================
-    // FIRST ADMIN BOOTSTRAP
-    // ============================================================
-    //
-    // This endpoint exists ONLY to create the first ADMIN account.
-    //
-    // It is protected by:
-    //
-    // 1. X-Bootstrap-Key header
-    // 2. Database must contain ZERO ADMIN accounts
-    //
-    // Once the first ADMIN exists, this endpoint permanently refuses
-    // to create another ADMIN.
-    //
-    // ============================================================
+    // Creates the first admin account only.
+    // Needs the X-Bootstrap-Key header and only works while there are no admins yet.
 
     @PostMapping("/bootstrap/admin")
     public ResponseEntity<?> bootstrapFirstAdmin(
@@ -262,9 +245,7 @@ public class AuthController {
                 );
     }
 
-    // ============================================================
     // EMPLOYEE INVITE
-    // ============================================================
 
     @PostMapping("/employee/invite")
     public ResponseEntity<?> inviteEmployee(
@@ -292,9 +273,7 @@ public class AuthController {
                 );
     }
 
-    // ============================================================
     // VERIFY EMPLOYEE INVITE
-    // ============================================================
 
     @GetMapping("/employee/invite/verify")
     public ResponseEntity<?> verifyEmployeeInvite(
@@ -311,9 +290,7 @@ public class AuthController {
         return ResponseEntity.ok(invite);
     }
 
-    // ============================================================
     // DOCTOR SIGNUP
-    // ============================================================
 
     @PostMapping("/employee/signup/doctor")
     public ResponseEntity<?> signupDoctor(
@@ -337,9 +314,7 @@ public class AuthController {
                 );
     }
 
-    // ============================================================
     // CLINIC STAFF SIGNUP
-    // ============================================================
 
     @PostMapping("/employee/signup/clinicstaff")
     public ResponseEntity<?> signupClinicStaff(
@@ -363,9 +338,7 @@ public class AuthController {
                 );
     }
 
-    // ============================================================
     // EMPLOYEE ACCESS REQUEST
-    // ============================================================
 
     @PostMapping("/employee/request-access")
     public ResponseEntity<?> requestAccess(
@@ -394,16 +367,13 @@ public class AuthController {
                 );
     }
 
-    // ============================================================
     // FORGOT PASSWORD
-    // ============================================================
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         passwordResetService.requestReset(request.getEmail());
 
-        // Deliberately identical response regardless of whether the email
-        // exists — prevents account enumeration via this endpoint.
+        // Same reply whether the email exists or not, so nobody can use this to check for accounts.
         return ResponseEntity.ok(
                 "If an account exists for this email, a password reset code has been sent."
         );
@@ -437,9 +407,7 @@ public class AuthController {
         return ResponseEntity.ok("Password reset successfully. You can now log in.");
     }
 
-    // ============================================================
     // ADMIN - LIST ACCESS REQUESTS
-    // ============================================================
 
     @GetMapping("/employee/access-requests")
     public ResponseEntity<?> listAccessRequests(
@@ -455,9 +423,7 @@ public class AuthController {
         return ResponseEntity.ok(requests);
     }
 
-    // ============================================================
     // ADMIN - APPROVE ACCESS REQUEST
-    // ============================================================
 
     @PostMapping("/employee/access-requests/{id}/approve")
     public ResponseEntity<?> approveAccessRequest(
@@ -487,9 +453,7 @@ public class AuthController {
         );
     }
 
-    // ============================================================
     // ADMIN - REJECT ACCESS REQUEST
-    // ============================================================
 
     @PostMapping("/employee/access-requests/{id}/reject")
     public ResponseEntity<?> rejectAccessRequest(

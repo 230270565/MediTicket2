@@ -1,3 +1,13 @@
+/*
+ ClinicStaffControllerTest.java
+
+ Test class for ClinicStaffController
+
+ Author: Matthew Barron (230398863)
+
+ Date: 13th July 2026
+*/
+
 package za.ac.cput.controller;
 
 import org.junit.jupiter.api.*;

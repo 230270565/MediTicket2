@@ -1,3 +1,13 @@
+/*
+ Appointment.java
+
+ Appointment entity class
+
+ Author: Joshua Peter Bonzet (221312536)
+
+ Date: 20th June 2026
+*/
+
 package za.ac.cput.domain;
 
 import jakarta.persistence.*;
@@ -23,10 +33,7 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private ConfirmationStatus confirmationStatus;
 
-    // NEW — the patient this appointment belongs to. Required at creation:
-    // without this there's no way to trace a PENDING appointment back to
-    // whoever booked it, since PatientTicket (the other patient link) only
-    // gets created once a nurse approves.
+    // The patient who booked. Needed because the ticket only gets created once a nurse approves.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id")
     private Patient patient;
@@ -39,7 +46,7 @@ public class Appointment {
     @JoinColumn(name = "staff_id")
     private ClinicStaff staff;
 
-    // NEW — the patient's stated reason for booking, captured at creation time.
+    // The patient's stated reason for booking, captured at creation time.
     @Column(length = 1000)
     private String reason;
 
@@ -154,8 +161,7 @@ public class Appointment {
             return this;
         }
 
-        // Uses getters, not fields: when appointment is a lazy Hibernate proxy its own
-        // fields are empty and only the getters reach the real data.
+        // Uses getters because a lazy Hibernate proxy has empty fields.
         public Builder copy(Appointment appointment) {
             this.appointmentId = appointment.getAppointmentId();
             this.appointmentDate = appointment.getAppointmentDate();

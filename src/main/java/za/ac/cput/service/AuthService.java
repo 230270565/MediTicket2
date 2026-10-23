@@ -1,3 +1,13 @@
+/*
+ AuthService.java
+
+ Service class for Auth
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,9 +81,7 @@ public class AuthService implements IAuthService {
         this.employeeAccessRequestService = employeeAccessRequestService;
     }
 
-    // ============================================================
     // PATIENT SIGNUP
-    // ============================================================
 
     @Override
     public Patient signUp(Patient patient) {
@@ -117,13 +125,7 @@ public class AuthService implements IAuthService {
                     token.getToken()
             );
         } catch (Exception e) {
-            // The account and verification token are already saved at this
-            // point — a failed email (bad SMTP creds, network issue, etc.)
-            // shouldn't undo a successful signup. Log it so it's visible,
-            // but don't fail the request.
-            // Also log the real verification link so it can be visited
-            // manually during local dev, since real email delivery isn't
-            // configured yet.
+            // The account is already saved, so a failed email shouldn't undo the signup. We log it instead.
             logger.warn("Signup succeeded for {} but verification email failed to send: {}",
                     savedPatient.getEmail(), e.getMessage());
             logger.warn("Manual verification link (paste into a browser): http://localhost:8080/api/auth/verify?token={}",
@@ -133,9 +135,7 @@ public class AuthService implements IAuthService {
         return savedPatient;
     }
 
-    // ============================================================
     // PATIENT ACCOUNT VERIFICATION
-    // ============================================================
 
     @Override
     public boolean verifyAccount(String token) {
@@ -180,18 +180,14 @@ public class AuthService implements IAuthService {
         return true;
     }
 
-    // ============================================================
     // LOGIN
-    // ============================================================
 
     @Override
     public AuthResponse logIn(
             String email,
             String rawPassword) {
 
-        // --------------------------------------------------------
         // PATIENT
-        // --------------------------------------------------------
 
         Optional<Patient> patientOpt =
                 patientService.findByEmail(email);
@@ -229,9 +225,7 @@ public class AuthService implements IAuthService {
             );
         }
 
-        // --------------------------------------------------------
         // DOCTOR
-        // --------------------------------------------------------
 
         Optional<Doctor> doctorOpt =
                 doctorService.findByEmail(email);
@@ -269,9 +263,7 @@ public class AuthService implements IAuthService {
             );
         }
 
-        // --------------------------------------------------------
         // CLINIC STAFF
-        // --------------------------------------------------------
 
         Optional<ClinicStaff> staffOpt =
                 clinicStaffService.findByEmail(email);
@@ -313,23 +305,10 @@ public class AuthService implements IAuthService {
         return null;
     }
 
-    // ============================================================
     // FIRST ADMIN BOOTSTRAP
-    // ============================================================
 
-    /**
-     * Creates the FIRST ClinicStaff ADMIN account.
-     *
-     * Security rules:
-     *
-     * 1. Bootstrap key must match the server-side configured key.
-     * 2. No ADMIN may already exist.
-     * 3. User must not already exist under any account type.
-     * 4. Password is always BCrypt encoded here.
-     * 5. Account is immediately ACTIVE.
-     * 6. StaffRole is forced to ADMIN.
-     * 7. UserType is determined by the ClinicStaff entity.
-     */
+    // Creates the first admin. Needs the right bootstrap key and no admin can exist yet.
+    // The account is active straight away.
     public ClinicStaff bootstrapFirstAdmin(
             String suppliedBootstrapKey,
             String firstName,
@@ -341,9 +320,7 @@ public class AuthService implements IAuthService {
             LocalDate dob,
             String department) {
 
-        // --------------------------------------------------------
-        // 1. Validate bootstrap key
-        // --------------------------------------------------------
+        // Check the bootstrap key
 
         if (suppliedBootstrapKey == null
                 || bootstrapAdminKey == null
@@ -353,15 +330,7 @@ public class AuthService implements IAuthService {
             return null;
         }
 
-        // --------------------------------------------------------
-        // 2. FIRST ADMIN CHECK
-        // --------------------------------------------------------
-        //
-        // We use getAll() because your ClinicStaffService already
-        // exposes getAll() and the existing controller uses it.
-        //
-        // If ANY ADMIN exists, bootstrap is permanently closed.
-        // --------------------------------------------------------
+        // Stop if an admin already exists.
 
         boolean adminAlreadyExists =
                 clinicStaffService.getAll()
@@ -376,9 +345,7 @@ public class AuthService implements IAuthService {
             return null;
         }
 
-        // --------------------------------------------------------
-        // 3. Basic validation
-        // --------------------------------------------------------
+        // Basic validation
 
         if (email == null
                 || email.isBlank()
@@ -392,9 +359,7 @@ public class AuthService implements IAuthService {
             return null;
         }
 
-        // --------------------------------------------------------
-        // 4. Make sure email does not already belong to anyone
-        // --------------------------------------------------------
+        // Make sure the email is not already used
 
         if (patientService.findByEmail(email).isPresent()) {
             return null;
@@ -408,9 +373,7 @@ public class AuthService implements IAuthService {
             return null;
         }
 
-        // --------------------------------------------------------
-        // 5. Build Name
-        // --------------------------------------------------------
+        // Build the name
 
         Name name =
                 new Name.Builder()
@@ -419,9 +382,7 @@ public class AuthService implements IAuthService {
                         .setLastName(lastName)
                         .build();
 
-        // --------------------------------------------------------
-        // 6. Create FIRST ADMIN
-        // --------------------------------------------------------
+        // Create the admin
 
         ClinicStaff admin =
                 new ClinicStaff.Builder()
@@ -439,16 +400,12 @@ public class AuthService implements IAuthService {
                         .setAccountStatus(UserStatus.ACTIVE)
                         .build();
 
-        // --------------------------------------------------------
-        // 7. Persist
-        // --------------------------------------------------------
+        // Save
 
         return clinicStaffService.create(admin);
     }
 
-    // ============================================================
     // RESEND VERIFICATION
-    // ============================================================
 
     @Override
     public boolean resendVerification(String email) {
@@ -482,9 +439,7 @@ public class AuthService implements IAuthService {
         return true;
     }
 
-    // ============================================================
     // CHANGE PASSWORD
-    // ============================================================
 
     @Override
     public boolean changePassword(
@@ -579,9 +534,7 @@ public class AuthService implements IAuthService {
         return false;
     }
 
-    // ============================================================
     // EMPLOYEE INVITE
-    // ============================================================
 
     private void sendInvite(
             String email,
@@ -638,9 +591,7 @@ public class AuthService implements IAuthService {
         return true;
     }
 
-    // ============================================================
     // VERIFY EMPLOYEE INVITE
-    // ============================================================
 
     @Override
     public EmployeeInviteResponse verifyEmployeeInvite(
@@ -649,9 +600,7 @@ public class AuthService implements IAuthService {
         return jwtService.parseInviteToken(token);
     }
 
-    // ============================================================
     // DOCTOR SIGNUP
-    // ============================================================
 
     @Override
     public Doctor signUpDoctor(
@@ -701,9 +650,7 @@ public class AuthService implements IAuthService {
         return doctorService.create(doctor);
     }
 
-    // ============================================================
     // CLINIC STAFF SIGNUP
-    // ============================================================
 
     @Override
     public ClinicStaff signUpClinicStaff(
@@ -761,9 +708,7 @@ public class AuthService implements IAuthService {
         return clinicStaffService.create(clinicStaff);
     }
 
-    // ============================================================
     // SELF-SERVICE ACCESS REQUEST
-    // ============================================================
 
     @Override
     public boolean requestEmployeeAccess(
@@ -776,7 +721,7 @@ public class AuthService implements IAuthService {
             return false;
         }
 
-        // ADMIN can NEVER be requested through this endpoint.
+        // Admin can never be requested here.
         if (staffRole == StaffRole.ADMIN) {
             return false;
         }
@@ -821,9 +766,7 @@ public class AuthService implements IAuthService {
                 .create(accessRequest) != null;
     }
 
-    // ============================================================
     // APPROVE ACCESS REQUEST
-    // ============================================================
 
     @Override
     public boolean approveAccessRequest(
@@ -873,9 +816,7 @@ public class AuthService implements IAuthService {
         return true;
     }
 
-    // ============================================================
     // REJECT ACCESS REQUEST
-    // ============================================================
 
     @Override
     public boolean rejectAccessRequest(

@@ -1,3 +1,13 @@
+/*
+ PatientTicketController.java
+
+ REST controller for PatientTicket
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 13th July 2026
+*/
+
 package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +80,7 @@ public class PatientTicketController {
         return ResponseEntity.ok(updated);
     }
 
-    // NEW — used by the admin/nurse Appointments page to check whether a
-    // CONFIRMED appointment already has a ticket, before showing "Create Ticket".
+    // The Appointments page uses this to check if a confirmed appointment already has a ticket.
     @GetMapping("/byappointment/{appointmentId}")
     public ResponseEntity<PatientTicket> findByAppointmentId(@PathVariable int appointmentId) {
         Appointment appointment = appointmentService.read(appointmentId);

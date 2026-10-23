@@ -1,3 +1,13 @@
+/*
+ NotificationServiceTest.java
+
+ Test class for NotificationService
+
+ Author: Raul Jaaim Everts (230270565)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service;
 
 import za.ac.cput.domain.enums.*;

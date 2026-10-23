@@ -1,3 +1,13 @@
+/*
+ AppointmentService.java
+
+ Service class for Appointment
+
+ Author: Joshua Peter Bonzet (221312536)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +121,7 @@ public class AppointmentService implements IAppointmentService {
         return repository.findByPatient_UserId(patientId);
     }
 
-    // ===== Orchestration methods =====
+    // Orchestration methods
 
     @Override
     @Transactional
@@ -145,8 +155,7 @@ public class AppointmentService implements IAppointmentService {
                 .setPatient(patient)
                 .setAppointment(confirmed)
                 .build();
-        // OPEN is added inside patientTicketService.create() — adding it here
-        // too gave every ticket two OPEN entries in its history.
+        // patientTicketService.create() already adds OPEN.
         ticket = patientTicketService.create(ticket);
 
         // Step 3: notify patient + doctor
@@ -181,9 +190,7 @@ public class AppointmentService implements IAppointmentService {
         return rejected;
     }
 
-    // ===== Private notification helpers =====
-    // Messages name the people and the slot so they make sense on their own,
-    // in the app and in the email copy.
+    // Notification helpers. The messages name the patient, doctor and time.
 
     private static final java.time.format.DateTimeFormatter DAY =
             java.time.format.DateTimeFormatter.ofPattern("d MMM yyyy");

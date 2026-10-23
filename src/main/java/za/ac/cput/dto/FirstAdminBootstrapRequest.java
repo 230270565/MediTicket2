@@ -1,3 +1,13 @@
+/*
+ FirstAdminBootstrapRequest.java
+
+ First Admin Bootstrap Request DTO
+
+ Author: Matthew Barron (230398863)
+
+ Date: 14th August 2026
+*/
+
 package za.ac.cput.dto;
 
 import java.time.LocalDate;

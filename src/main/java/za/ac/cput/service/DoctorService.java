@@ -1,3 +1,13 @@
+/*
+ DoctorService.java
+
+ Service class for Doctor
+
+ Author: Jaden Clayton Abrahams (222206721)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service;
 
 import org.springframework.stereotype.Service;
@@ -13,23 +23,19 @@ public class DoctorService implements IDoctorService {
 
     private final DoctorRepository doctorRepository;
 
-
     public DoctorService(DoctorRepository doctorRepository) {
         this.doctorRepository = doctorRepository;
     }
-
 
     @Override
     public Doctor create(Doctor doctor) {
         return doctorRepository.save(doctor);
     }
 
-
     @Override
     public Doctor read(Integer id) {
         return doctorRepository.findById(id).orElse(null);
     }
-
 
     @Override
     public Doctor update(Doctor doctor) {
@@ -53,18 +59,15 @@ public class DoctorService implements IDoctorService {
         return this.doctorRepository.save(updated);
     }
 
-
     @Override
     public void delete(Integer id) {
         doctorRepository.deleteById(id);
     }
 
-
     @Override
     public List<Doctor> getAll() {
         return doctorRepository.findAll();
     }
-
 
     @Override
     public Optional<Doctor> findByEmail(String email) {

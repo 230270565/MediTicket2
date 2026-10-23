@@ -1,3 +1,13 @@
+/*
+ ClinicStaffService.java
+
+ Service class for ClinicStaff
+
+ Author: Matthew Barron (230398863)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +37,7 @@ public class ClinicStaffService implements IClinicStaffService {
 
     @Override
     public ClinicStaff read(Integer id) {
-        // orElse(null), not get(): callers such as approveAppointment() check
-        // for null, but get() threw and turned a bad id into a 500 error.
+        // Returns null for a bad id so callers can handle it.
         return clinicStaffRepository.findById(id).orElse(null);
     }
 

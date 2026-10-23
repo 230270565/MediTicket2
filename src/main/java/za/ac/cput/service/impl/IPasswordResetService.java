@@ -1,18 +1,23 @@
+/*
+ IPasswordResetService.java
+
+ Service interface for PasswordReset
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 14th August 2026
+*/
+
 package za.ac.cput.service.impl;
 
 public interface IPasswordResetService {
 
-    // Always "succeeds" from the caller's perspective for enumeration safety —
-    // returns true only to signal the operation ran, not that the email exists.
-    // The controller uses this return value purely for logging/testing; the
-    // HTTP response wording stays identical either way.
+    // Always returns true so the reply is the same whether the email exists or not.
     boolean requestReset(String email);
 
-    // Returns the reset session token on success, null on failure (wrong
-    // code, expired, too many attempts, or no pending request).
+    // Returns the reset token, or null if the code is wrong or expired.
     String verifyCode(String email, String code);
 
-    // Requires the resetSessionToken issued by verifyCode(). Returns true
-    // only if that token is valid, unused, unexpired, and tied to this email.
+    // Needs the token from verifyCode().
     boolean resetPassword(String email, String resetSessionToken, String newPassword);
 }

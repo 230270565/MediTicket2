@@ -1,3 +1,20 @@
+/*
+ EnumColumnFixer.java
+
+ Changes old MySQL ENUM columns to VARCHAR on startup so new statuses save
+
+ Authors:
+  Joshua Reid Adams (230317693)
+  Abdullahi Raage Farah (230971091)
+  Aidan Barends (230255639)
+  Jaden Clayton Abrahams (222206721)
+  Joshua Peter Bonzet (221312536)
+  Matthew Barron (230398863)
+  Raul Jaaim Everts (230270565)
+
+ Date: 22nd October 2026
+*/
+
 package za.ac.cput.config;
 
 import org.slf4j.Logger;
@@ -10,16 +27,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Converts old MySQL ENUM status columns to VARCHAR when the app starts.
- *
- * Databases created from MediTicketDB.sql define e.g. notification_status as
- * ENUM('SENT','FAILED','PENDING'). The Java enum also has READ, so marking a
- * notification as read was rejected by MySQL and it showed as unread again on
- * the next refresh. ddl-auto=update never changes an existing column's type,
- * so this runs once per startup: columns that are already VARCHAR are skipped.
- * @Enumerated(EnumType.STRING) stores the same text in a VARCHAR, so no data changes.
- */
+// Older databases made from MediTicketDB.sql have ENUM columns, so new values like READ get rejected.
+// On startup this changes those columns to VARCHAR. Columns that are already VARCHAR are skipped.
 @Component
 public class EnumColumnFixer implements ApplicationRunner {
 

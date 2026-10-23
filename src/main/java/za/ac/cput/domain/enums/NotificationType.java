@@ -1,5 +1,14 @@
+/*
+ NotificationType.java
+
+ Enum for notification type values
+
+ Author: Raul Jaaim Everts (230270565)
+
+ Date: 20th June 2026
+*/
+
 package za.ac.cput.domain.enums;
-//Raul Everts 230270565
 public enum NotificationType {
     SMS,
     EMAIL
