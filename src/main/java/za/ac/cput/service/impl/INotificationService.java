@@ -1,3 +1,13 @@
+/*
+ INotificationService.java
+
+ Service interface for Notification
+
+ Author: Raul Jaaim Everts (230270565)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service.impl;
 
 import za.ac.cput.domain.Notification;
@@ -20,6 +30,5 @@ public interface INotificationService extends IService<Notification, Integer> {
     List<Notification> findByNotificationStatus(NotificationStatus notificationStatus);
 
     List<Notification> findByNotificationType(NotificationType notificationType);
-
 
 }

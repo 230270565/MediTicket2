@@ -1,3 +1,13 @@
+/*
+ PatientSignupRequest.java
+
+ Patient Signup Request DTO
+
+ Author: Aidan Barends (230255639)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.dto;
 
 import java.time.LocalDate;

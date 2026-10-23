@@ -1,3 +1,13 @@
+/*
+ DoctorFactoryTest.java
+
+ Test class for DoctorFactory
+
+ Author: Jaden Clayton Abrahams (222206721)
+
+ Date: 22nd June 2026
+*/
+
 package za.ac.cput.factory;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +27,6 @@ class DoctorFactoryTest {
 
     @BeforeEach
     void setUp() {
-        // Create the Name object according to your Name class implementation
-        // Example if using a Builder:
         name = new Name.Builder()
                 .setFirstName("Jaden")
                 .setMiddleName("Clayton")

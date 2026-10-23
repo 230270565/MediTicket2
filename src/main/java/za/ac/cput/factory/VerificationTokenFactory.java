@@ -1,3 +1,13 @@
+/*
+ VerificationTokenFactory.java
+
+ Factory class for VerificationToken
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.factory;
 
 import za.ac.cput.domain.VerificationToken;

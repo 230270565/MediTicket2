@@ -1,3 +1,13 @@
+/*
+ DoctorRepository.java
+
+ Repository interface for Doctor
+
+ Author: Jaden Clayton Abrahams (222206721)
+
+ Date: 29th June 2026
+*/
+
 package za.ac.cput.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;

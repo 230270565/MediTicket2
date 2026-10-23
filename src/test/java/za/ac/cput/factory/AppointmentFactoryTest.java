@@ -1,3 +1,13 @@
+/*
+ AppointmentFactoryTest.java
+
+ Test class for AppointmentFactory
+
+ Author: Joshua Peter Bonzet (221312536)
+
+ Date: 22nd June 2026
+*/
+
 package za.ac.cput.factory;
 
 import org.junit.jupiter.api.BeforeEach;

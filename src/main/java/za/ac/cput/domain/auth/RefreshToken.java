@@ -1,3 +1,13 @@
+/*
+ RefreshToken.java
+
+ RefreshToken entity class
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.domain.auth;
 
 import jakarta.persistence.*;

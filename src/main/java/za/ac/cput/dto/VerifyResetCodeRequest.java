@@ -1,3 +1,13 @@
+/*
+ VerifyResetCodeRequest.java
+
+ Verify Reset Code Request DTO
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 14th August 2026
+*/
+
 package za.ac.cput.dto;
 
 public class VerifyResetCodeRequest {

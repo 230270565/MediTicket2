@@ -1,3 +1,13 @@
+/*
+ DoctorServiceTest.java
+
+ Test class for DoctorService
+
+ Author: Jaden Clayton Abrahams (222206721)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +36,6 @@ class DoctorServiceTest {
 
     private Doctor doctor;
 
-
     @BeforeEach
     void setUp() {
 
@@ -53,7 +62,6 @@ class DoctorServiceTest {
                 .build();
     }
 
-
     @Test
     void createDoctorSuccess() {
 
@@ -67,7 +75,6 @@ class DoctorServiceTest {
 
         verify(doctorRepository).save(doctor);
     }
-
 
     @Test
     void readDoctorSuccess() {
@@ -83,7 +90,6 @@ class DoctorServiceTest {
         verify(doctorRepository).findById(1);
     }
 
-
     @Test
     void readDoctorNotFound() {
 
@@ -96,7 +102,6 @@ class DoctorServiceTest {
 
         verify(doctorRepository).findById(1);
     }
-
 
     @Test
     void updateDoctorSuccess() {
@@ -112,7 +117,6 @@ class DoctorServiceTest {
         verify(doctorRepository).save(doctor);
     }
 
-
     @Test
     void deleteDoctorSuccess() {
 
@@ -124,7 +128,6 @@ class DoctorServiceTest {
         verify(doctorRepository)
                 .deleteById(1);
     }
-
 
     @Test
     void getAllDoctorsSuccess() {
@@ -141,7 +144,6 @@ class DoctorServiceTest {
 
         verify(doctorRepository).findAll();
     }
-
 
     @Test
     void findDoctorByEmailSuccess() {

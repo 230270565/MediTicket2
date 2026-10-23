@@ -1,3 +1,13 @@
+/*
+ NotificationController.java
+
+ REST controller for Notification
+
+ Author: Raul Jaaim Everts (230270565)
+
+ Date: 13th July 2026
+*/
+
 package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +121,7 @@ public class NotificationController {
 
     @PutMapping("/markread/{id}")
     public ResponseEntity<Notification> markAsRead(@PathVariable int id) {
-        // Single-column update — keeps every other field (stage, email flag) as it is.
+        // Only updates the status column, the other fields stay as they are.
         if (!notificationService.markAsRead(id)) {
             return ResponseEntity.notFound().build();
         }

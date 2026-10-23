@@ -1,3 +1,13 @@
+/*
+ AppointmentRepository.java
+
+ Repository interface for Appointment
+
+ Author: Joshua Peter Bonzet (221312536)
+
+ Date: 29th June 2026
+*/
+
 package za.ac.cput.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +31,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
 
     List<Appointment> findByDoctor_UserIdAndAppointmentDate(int doctorId, LocalDate appointmentDate);
 
-    // NEW
     List<Appointment> findByPatient_UserId(int patientId);
 }

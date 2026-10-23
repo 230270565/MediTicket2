@@ -1,3 +1,13 @@
+/*
+ EmployeeAccessRequest.java
+
+ EmployeeAccessRequest entity class
+
+ Author: Matthew Barron (230398863)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.domain;
 
 import jakarta.persistence.*;
@@ -33,9 +43,7 @@ public class EmployeeAccessRequest {
     private LocalDateTime requestDate;
     private LocalDateTime processedDate;
 
-    // ClinicStaff is a real @Entity (not @MappedSuperclass like User), so a
-    // direct @ManyToOne here is valid — unlike Notification/VerificationToken,
-    // which had to work around User being a @MappedSuperclass.
+    // ClinicStaff is a real entity, so a normal @ManyToOne works here.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "processed_by")
     private ClinicStaff processedBy;

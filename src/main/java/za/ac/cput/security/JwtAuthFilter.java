@@ -1,3 +1,13 @@
+/*
+ JwtAuthFilter.java
+
+ Reads the JWT on each request and sets the logged in user
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.security;
 
 import jakarta.servlet.FilterChain;

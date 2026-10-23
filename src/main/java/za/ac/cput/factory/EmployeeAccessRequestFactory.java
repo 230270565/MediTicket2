@@ -1,3 +1,13 @@
+/*
+ EmployeeAccessRequestFactory.java
+
+ Factory class for EmployeeAccessRequest
+
+ Author: Matthew Barron (230398863)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.factory;
 
 import za.ac.cput.domain.EmployeeAccessRequest;
@@ -33,7 +43,7 @@ public class EmployeeAccessRequestFactory {
         if (requestedUserType == UserType.DOCTOR && requestedStaffRole != null) return null;
         if (requestedUserType == UserType.CLINIC_STAFF && requestedStaffRole == null) return null;
 
-        // Self-service requests can never target ADMIN — that stays invite-only
+        // Admin can not be requested, admins are invite only
         if (requestedStaffRole == StaffRole.ADMIN) return null;
 
         return new EmployeeAccessRequest.Builder()
@@ -49,8 +59,7 @@ public class EmployeeAccessRequestFactory {
                 .build();
     }
 
-    // Convenience overload for the common case: a brand-new PENDING request,
-    // not yet processed by anyone.
+    // Shortcut for a new PENDING request.
     public static EmployeeAccessRequest createEmployeeAccessRequest(
             String email, UserType requestedUserType, StaffRole requestedStaffRole) {
 

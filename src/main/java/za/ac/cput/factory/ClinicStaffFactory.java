@@ -1,3 +1,13 @@
+/*
+ ClinicStaffFactory.java
+
+ Factory class for ClinicStaff
+
+ Author: Matthew Barron (230398863)
+
+ Date: 22nd June 2026
+*/
+
 package za.ac.cput.factory;
 
 import za.ac.cput.domain.enums.StaffRole;

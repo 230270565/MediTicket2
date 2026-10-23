@@ -1,3 +1,13 @@
+/*
+ EmployeeAccessRequestRepository.java
+
+ Repository interface for EmployeeAccessRequest
+
+ Author: Matthew Barron (230398863)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;

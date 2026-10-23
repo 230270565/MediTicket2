@@ -1,3 +1,13 @@
+/*
+ EmployeeAccessRequestService.java
+
+ Service class for EmployeeAccessRequest
+
+ Author: Matthew Barron (230398863)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +48,7 @@ public class EmployeeAccessRequestService implements IEmployeeAccessRequestServi
         EmployeeAccessRequest existing = read(request.getRequestId());
         if (existing == null) return null;
 
-        // Re-apply every field explicitly rather than blindly overwriting —
-        // same pattern used to fix the PatientService/DoctorService update() bug.
+        // Copy each field across so nothing gets wiped.
         EmployeeAccessRequest updated = new EmployeeAccessRequest.Builder()
                 .copy(existing)
                 .setEmail(request.getEmail())

@@ -1,3 +1,13 @@
+/*
+ Name.java
+
+ Name entity class
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 20th June 2026
+*/
+
 package za.ac.cput.domain.valueObject;
 
 import jakarta.persistence.Embeddable;

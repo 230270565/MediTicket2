@@ -1,3 +1,13 @@
+/*
+ ClinicStaffRepository.java
+
+ Repository interface for ClinicStaff
+
+ Author: Matthew Barron (230398863)
+
+ Date: 29th June 2026
+*/
+
 package za.ac.cput.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;

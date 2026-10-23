@@ -1,3 +1,13 @@
+/*
+ VerificationToken.java
+
+ VerificationToken entity class
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.domain;
 
 import jakarta.persistence.*;
@@ -5,7 +15,6 @@ import za.ac.cput.domain.enums.UserType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 
 @Entity
 @Table(name = "verification_token")
@@ -19,8 +28,7 @@ public class VerificationToken {
     @Column(nullable = false, unique = true)
     private String token;
 
-    // No JPA relationship possible — User is @MappedSuperclass, not a real table.
-    // Store the userId + userType instead, and resolve it in the service layer.
+    // User isn't a table, so we store the userId and userType instead.
     @Column(nullable = false)
     private int userId;
 
@@ -62,7 +70,6 @@ public class VerificationToken {
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(this.expiryDate);
     }
-
 
     //  toString
     @Override
@@ -109,10 +116,7 @@ public class VerificationToken {
             return this;
         }
 
-        //  Auto-generates a UUID token and sets 24hr expiry
-        // Auto-generates a 6-digit numeric code and sets 24hr expiry. Was a
-// UUID (for a clickable email link) — switched to a short code so it
-// can be typed into the app directly, matching the password-reset flow.
+        // Makes a 6-digit code that expires in 24 hours.
         public Builder generateFor(int userId, UserType userType) {
             this.userId = userId;
             this.userType = userType;

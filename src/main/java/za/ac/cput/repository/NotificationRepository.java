@@ -1,3 +1,13 @@
+/*
+ NotificationRepository.java
+
+ Repository interface for Notification
+
+ Author: Raul Jaaim Everts (230270565)
+
+ Date: 29th June 2026
+*/
+
 package za.ac.cput.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,15 +40,12 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 
     List<Notification> findByNotificationType(NotificationType notificationType);
 
-    // NEW — a notification can reference an appointment or ticket without its
-    // patient_id necessarily being set too (defensive), so patient cascade
-    // delete gathers by all three to avoid leaving an orphaned FK reference.
+    // Used when deleting a patient, so no notifications are left pointing at their records.
     List<Notification> findByAppointmentIn(List<Appointment> appointments);
 
     List<Notification> findByTicketIn(List<PatientTicket> tickets);
 
-    // NEW — single-column updates. Rebuilding the whole Notification through
-    // its Builder (as markAsRead used to) risks dropping fields it forgets to copy.
+    // Updates one column only, so the other fields can't get lost.
     @Modifying
     @Transactional
     @Query("update Notification n set n.notificationStatus = za.ac.cput.domain.enums.NotificationStatus.READ where n.notificationId = :id")

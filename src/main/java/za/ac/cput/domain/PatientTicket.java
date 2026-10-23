@@ -1,3 +1,13 @@
+/*
+ PatientTicket.java
+
+ PatientTicket entity class
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 20th June 2026
+*/
+
 package za.ac.cput.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -33,12 +43,8 @@ public class PatientTicket {
     @JsonManagedReference
     private List<TicketStatus> statusHistory;
 
-    // NEW — denormalized copy of the latest statusHistory entry's type,
-    // kept in sync exclusively inside addStatus(). Exists purely so
-    // PatientTicketRepository can query "give me all tickets currently
-    // OPEN" as an indexed column lookup instead of a JPQL scan over
-    // statusHistory. statusHistory remains the source of truth for
-    // history/auditing — this field is a read-optimization only.
+    // Latest status, updated in addStatus() so tickets can be searched by status.
+    // statusHistory is still the full history.
     @Enumerated(EnumType.STRING)
     private StatusType currentStatus;
 
@@ -100,8 +106,7 @@ public class PatientTicket {
         this.currentStatus = statusType;
     }
 
-    // Unchanged in behavior — still derives from statusHistory, so it stays
-    // correct even for any row where currentStatus hasn't been backfilled yet.
+    // Reads from statusHistory so it is right even if currentStatus is empty.
     public StatusType getCurrentStatus() {
         if (statusHistory.isEmpty()) {
             return null;

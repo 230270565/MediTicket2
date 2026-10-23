@@ -1,3 +1,13 @@
+/*
+ ClinicStaffController.java
+
+ REST controller for ClinicStaff
+
+ Author: Matthew Barron (230398863)
+
+ Date: 13th July 2026
+*/
+
 package za.ac.cput.controller;
 
 import org.springframework.web.bind.annotation.*;

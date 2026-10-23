@@ -1,3 +1,13 @@
+/*
+ AppointmentServiceTest.java
+
+ Test class for AppointmentService
+
+ Author: Joshua Peter Bonzet (221312536)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service;
 
 import org.junit.jupiter.api.BeforeEach;

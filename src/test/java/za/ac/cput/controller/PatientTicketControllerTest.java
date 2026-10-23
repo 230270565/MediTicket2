@@ -1,3 +1,13 @@
+/*
+ PatientTicketControllerTest.java
+
+ Test class for PatientTicketController
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 13th July 2026
+*/
+
 package za.ac.cput.controller;
 
 import org.junit.jupiter.api.BeforeEach;

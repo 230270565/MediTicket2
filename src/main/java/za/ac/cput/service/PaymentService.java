@@ -31,17 +31,11 @@ public class PaymentService implements IPaymentService {
     @Autowired
     private PaymentRepository repository;
 
-    // NEW — needed to auto-close the ticket tied to this payment's
-    // appointment once the payment is confirmed PAID. This is a
-    // cross-domain write living in PaymentService rather than the
-    // controller, so every caller of update() gets correct behavior
-    // automatically instead of relying on each caller to remember to
-    // close the ticket separately.
+    // Used to close the ticket once the payment is PAID.
     @Autowired
     private PatientTicketRepository patientTicketRepository;
 
-    // Used to reload the full appointment (with its patient) for
-    // notifications — the request body only carries the appointment's id.
+    // Reloads the appointment so we have the patient for notifications.
     @Autowired
     private AppointmentRepository appointmentRepository;
 
@@ -96,7 +90,7 @@ public class PaymentService implements IPaymentService {
         return repository.findByPaymentMethod(paymentMethod);
     }
 
-    // NEW — isolated as a private helper so update() stays readable.
+    // Isolated as a private helper so update() stays readable.
     private void closeTicketIfPaid(Payment payment) {
         if (payment.getPaymentStatus() != PaymentStatus.PAID || payment.getAppointment() == null) {
             return;
@@ -104,7 +98,7 @@ public class PaymentService implements IPaymentService {
 
         PatientTicket ticket = patientTicketRepository.findByAppointment(payment.getAppointment());
         if (ticket == null || ticket.getCurrentStatus() == StatusType.CLOSED) {
-            return; // no ticket yet, or already closed — nothing to do
+            return; // no ticket yet, or it is already closed
         }
 
         ticket.addStatus(StatusType.CLOSED, "Closed automatically — payment received");

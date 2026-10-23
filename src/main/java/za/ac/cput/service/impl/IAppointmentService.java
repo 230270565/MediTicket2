@@ -1,3 +1,13 @@
+/*
+ IAppointmentService.java
+
+ Service interface for Appointment
+
+ Author: Joshua Peter Bonzet (221312536)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service.impl;
 
 import za.ac.cput.domain.Appointment;
@@ -24,7 +34,5 @@ public interface IAppointmentService extends IService<Appointment, Integer> {
 
     Appointment rejectAppointment(int appointmentId, int staffId, String reason);
 
-    // completeAppointment REMOVED — completion is now an automatic side
-    // effect of PatientTicketService.progressStatus(RESOLVED), not a
-    // manually-triggered clinic-staff action.
+    // Appointments are completed when the doctor resolves the ticket.
 }

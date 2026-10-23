@@ -1,3 +1,13 @@
+/*
+ IPatientTicketService.java
+
+ Service interface for PatientTicket
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service.impl;
 
 import za.ac.cput.domain.Appointment;

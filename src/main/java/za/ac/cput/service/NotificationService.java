@@ -1,3 +1,13 @@
+/*
+ NotificationService.java
+
+ Service class for Notification
+
+ Author: Raul Jaaim Everts (230270565)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +39,8 @@ public class NotificationService implements INotificationService {
         this.emailService = emailService;
     }
 
-    // ===== Flow notifications =====
-    // One entry point per recipient type, used by AppointmentService,
-    // PatientTicketService and PaymentService.
-    //   - status starts as SENT: an in-app notification is delivered the moment
-    //     it is saved; it becomes READ when the user opens it.
-    //   - stage records what the notification is about (TICKET_OPEN, PAYMENT_DUE...).
-    //   - patients and doctors also get an email copy; staff are in-app only,
-    //     otherwise every booking would email every nurse and admin.
+    // Notifications for the main flow. New ones start as SENT and become READ once opened.
+    // Patients and doctors also get an email. Staff only get it in the app.
 
     public Notification notifyPatient(Patient patient, String message, String stage,
                                       PatientTicket ticket, Appointment appointment, String emailSubject) {
@@ -130,6 +134,5 @@ public class NotificationService implements INotificationService {
     public List<Notification> findByNotificationStatus(NotificationStatus notificationStatus){
         return notificationRepository.findByNotificationStatus(notificationStatus);
     }
-
 
 }

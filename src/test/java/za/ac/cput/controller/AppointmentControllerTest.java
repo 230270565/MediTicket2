@@ -1,3 +1,13 @@
+/*
+ AppointmentControllerTest.java
+
+ Test class for AppointmentController
+
+ Author: Joshua Peter Bonzet (221312536)
+
+ Date: 13th July 2026
+*/
+
 package za.ac.cput.controller;
 
 import org.junit.jupiter.api.BeforeEach;

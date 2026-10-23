@@ -1,3 +1,13 @@
+/*
+ NotificationFactory.java
+
+ Factory class for Notification
+
+ Author: Raul Jaaim Everts (230270565)
+
+ Date: 22nd June 2026
+*/
+
 package za.ac.cput.factory;
 
 import za.ac.cput.domain.Appointment;
@@ -25,13 +35,11 @@ public class NotificationFactory {
                                                   Appointment appointment,
                                                   LocalDateTime notificationDate) {
 
-        // notificationId is DB-generated (@GeneratedValue IDENTITY) — it's
-        // always 0 on creation, so it can't be validated here. Removed check.
+        // The id is made by the database, so it isn't checked here.
         if (!Helper.isValidObject(notificationType)) return null;
         if (!Helper.isValidObject(notificationStatus)) return null;
         if (Helper.isNullOrEmpty(notificationMessage)) return null;
-        // ticket is optional: a booking request or a rejection happens before
-        // any ticket exists, so only the appointment is required.
+        // The ticket is optional because bookings and rejections happen before a ticket exists.
         if (!Helper.isValidObject(appointment)) return null;
         if (!Helper.isValidObject(notificationDate)) return null;
 

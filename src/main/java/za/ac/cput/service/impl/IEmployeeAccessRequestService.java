@@ -1,3 +1,13 @@
+/*
+ IEmployeeAccessRequestService.java
+
+ Service interface for EmployeeAccessRequest
+
+ Author: Matthew Barron (230398863)
+
+ Date: 11th August 2026
+*/
+
 package za.ac.cput.service.impl;
 
 import za.ac.cput.domain.EmployeeAccessRequest;

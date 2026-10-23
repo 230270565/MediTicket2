@@ -1,3 +1,13 @@
+/*
+ PasswordResetRequest.java
+
+ PasswordResetRequest entity class
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 14th August 2026
+*/
+
 package za.ac.cput.domain;
 
 import jakarta.persistence.*;
@@ -15,13 +25,11 @@ public class PasswordResetRequest {
     @Column(nullable = false)
     private String email;
 
-    // Bcrypt hash of the 6-digit code — never store the raw code.
+    // BCrypt hash of the 6-digit code, we never store the code itself.
     @Column(nullable = false)
     private String codeHash;
 
-    // Issued only after the code is successfully verified. Required by
-    // resetPassword() as proof the verify step actually happened — stops
-    // someone from skipping straight to reset-password with a guessed code.
+    // Only set once the code is verified, so the reset step can't be skipped to.
     private String resetSessionToken;
 
     private boolean verified;

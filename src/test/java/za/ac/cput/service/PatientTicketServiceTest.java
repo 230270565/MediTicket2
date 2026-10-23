@@ -1,3 +1,13 @@
+/*
+ PatientTicketServiceTest.java
+
+ Test class for PatientTicketService
+
+ Author: Joshua Reid Adams (230317693)
+
+ Date: 6th July 2026
+*/
+
 package za.ac.cput.service;
 
 import org.junit.jupiter.api.BeforeEach;

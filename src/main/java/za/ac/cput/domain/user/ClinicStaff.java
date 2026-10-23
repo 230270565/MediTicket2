@@ -1,3 +1,13 @@
+/*
+ ClinicStaff.java
+
+ ClinicStaff entity class
+
+ Author: Matthew Barron (230398863)
+
+ Date: 20th June 2026
+*/
+
 package za.ac.cput.domain.user;
 
 import jakarta.persistence.Entity;
@@ -42,7 +52,6 @@ public class ClinicStaff extends User {
     public UserType getUserType(){
         return UserType.CLINIC_STAFF;
     }
-
 
     @Override
     public String toString() {

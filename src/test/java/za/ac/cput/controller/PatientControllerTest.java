@@ -1,3 +1,12 @@
+/*
+ PatientControllerTest.java
+
+ Test class for PatientController
+
+ Author: Aidan Barends (230255639)
+
+ Date: 6th July 2026
+*/
 
 package za.ac.cput.controller;
 
