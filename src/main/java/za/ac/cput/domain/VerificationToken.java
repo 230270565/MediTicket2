@@ -116,11 +116,11 @@ public class VerificationToken {
             return this;
         }
 
-        // Makes a 6-digit code that expires in 24 hours.
+        // Makes a secure link token that expires in 24 hours.
         public Builder generateFor(int userId, UserType userType) {
             this.userId = userId;
             this.userType = userType;
-            this.token = String.valueOf(100000 + new java.security.SecureRandom().nextInt(900000));
+            this.token = UUID.randomUUID().toString();
             this.expiryDate = LocalDateTime.now().plusHours(24);
             return this;
         }

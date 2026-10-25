@@ -114,7 +114,7 @@ public class NotificationFactoryTest {
     void testCreateNotification_success_withPatient() {
         Notification n = NotificationFactory.createNotification(
                 1, NotificationType.EMAIL, NotificationStatus.PENDING,
-                "Your appointment is confirmed.", patient, ticket, appointment, notificationDate
+                "Your appointment is confirmed.", patient, null, null, ticket, appointment, notificationDate
         );
         assertNotNull(n);
         assertEquals(NotificationType.EMAIL, n.getNotificationType());
@@ -155,12 +155,13 @@ public class NotificationFactoryTest {
     }
 
     @Test
-    void testCreateNotification_invalidId_returnsNull() {
+    void testCreateNotification_zeroId_returnsNotNull() {
+        // The factory does not validate the id — the database assigns it.
         Notification n = NotificationFactory.createNotification(
                 0, NotificationType.EMAIL, NotificationStatus.PENDING,
                 "Message", patient, null, null, ticket, appointment, notificationDate
         );
-        assertNull(n);
+        assertNotNull(n);
     }
 
     @Test

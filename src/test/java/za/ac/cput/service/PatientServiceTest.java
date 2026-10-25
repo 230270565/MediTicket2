@@ -23,13 +23,29 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import za.ac.cput.domain.user.Patient;
+import za.ac.cput.repository.AppointmentRepository;
+import za.ac.cput.repository.NotificationRepository;
 import za.ac.cput.repository.PatientRepository;
+import za.ac.cput.repository.PatientTicketRepository;
+import za.ac.cput.repository.PaymentRepository;
 
 @ExtendWith(MockitoExtension.class)
 class PatientServiceTest {
 
     @Mock
     private PatientRepository patientRepository;
+
+    @Mock
+    private AppointmentRepository appointmentRepository;
+
+    @Mock
+    private PatientTicketRepository patientTicketRepository;
+
+    @Mock
+    private NotificationRepository notificationRepository;
+
+    @Mock
+    private PaymentRepository paymentRepository;
 
     @InjectMocks
     private PatientService patientService;
@@ -83,9 +99,12 @@ class PatientServiceTest {
 
     @Test
     void delete_shouldCallRepository() {
+        Patient patient = mock(Patient.class);
+        when(patientRepository.findById(1)).thenReturn(Optional.of(patient));
+
         patientService.delete(1);
 
-        verify(patientRepository).deleteById(1);
+        verify(patientRepository).delete(patient);
     }
 
     @Test
@@ -101,7 +120,7 @@ class PatientServiceTest {
     void findByEmail_shouldDelegateToRepository() {
         Patient patient = mock(Patient.class);
 
-        when(patientRepository.findByEmail1("a@b.com")).thenReturn(Optional.of(patient));
+        when(patientRepository.findByEmail("a@b.com")).thenReturn(patient);
 
         Optional<Patient> result = patientService.findByEmail("a@b.com");
 

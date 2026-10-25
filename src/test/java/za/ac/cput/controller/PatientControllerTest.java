@@ -113,7 +113,7 @@ class PatientControllerTest {
 
     @Test
     void f_FindByEmail() {
-        when(patientService.findByEmail("aidan.barends@email.com")).thenReturn(patient);
+        when(patientService.findByEmail("aidan.barends@email.com")).thenReturn(java.util.Optional.of(patient));
 
         Patient foundEmail = patientController.findByEmail("aidan.barends@email.com");
 

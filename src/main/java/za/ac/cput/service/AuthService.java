@@ -17,8 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import za.ac.cput.domain.EmployeeAccessRequest;
+import za.ac.cput.domain.EmployeeInviteToken;
 import za.ac.cput.domain.VerificationToken;
 import za.ac.cput.domain.auth.RefreshToken;
+import za.ac.cput.repository.EmployeeInviteTokenRepository;
 import za.ac.cput.domain.enums.RequestStatus;
 import za.ac.cput.domain.enums.StaffRole;
 import za.ac.cput.domain.enums.UserStatus;
@@ -54,6 +56,7 @@ public class AuthService implements IAuthService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final EmployeeAccessRequestService employeeAccessRequestService;
+    private final EmployeeInviteTokenRepository employeeInviteTokenRepository;
 
     @Value("${app.bootstrap.admin-key}")
     private String bootstrapAdminKey;
@@ -68,7 +71,8 @@ public class AuthService implements IAuthService {
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
             RefreshTokenService refreshTokenService,
-            EmployeeAccessRequestService employeeAccessRequestService) {
+            EmployeeAccessRequestService employeeAccessRequestService,
+            EmployeeInviteTokenRepository employeeInviteTokenRepository) {
 
         this.patientService = patientService;
         this.doctorService = doctorService;
@@ -79,6 +83,7 @@ public class AuthService implements IAuthService {
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
         this.employeeAccessRequestService = employeeAccessRequestService;
+        this.employeeInviteTokenRepository = employeeInviteTokenRepository;
     }
 
     // PATIENT SIGNUP
@@ -118,19 +123,11 @@ public class AuthService implements IAuthService {
                         savedPatient.getUserType()
                 );
 
-        try {
-            emailService.sendVerificationEmail(
-                    savedPatient.getEmail(),
-                    savedPatient.getName().getFirstName(),
-                    token.getToken()
-            );
-        } catch (Exception e) {
-            // The account is already saved, so a failed email shouldn't undo the signup. We log it instead.
-            logger.warn("Signup succeeded for {} but verification email failed to send: {}",
-                    savedPatient.getEmail(), e.getMessage());
-            logger.warn("Manual verification link (paste into a browser): http://localhost:8080/api/auth/verify?token={}",
-                    token.getToken());
-        }
+        emailService.sendVerificationEmail(
+                savedPatient.getEmail(),
+                savedPatient.getName().getFirstName(),
+                token.getToken()
+        );
 
         return savedPatient;
     }
@@ -541,17 +538,20 @@ public class AuthService implements IAuthService {
             UserType userType,
             StaffRole staffRole) {
 
-        String inviteToken =
-                jwtService.generateInviteToken(
-                        email,
-                        userType,
-                        staffRole
-                );
+        // Remove any existing invite for this address before issuing a new one.
+        employeeInviteTokenRepository.deleteByEmail(email);
+
+        EmployeeInviteToken inviteToken =
+                new EmployeeInviteToken.Builder()
+                        .generateFor(email, userType, staffRole)
+                        .build();
+
+        employeeInviteTokenRepository.save(inviteToken);
 
         emailService.sendEmployeeInviteEmail(
                 email,
                 userType,
-                inviteToken
+                inviteToken.getToken()
         );
     }
 
@@ -597,7 +597,13 @@ public class AuthService implements IAuthService {
     public EmployeeInviteResponse verifyEmployeeInvite(
             String token) {
 
-        return jwtService.parseInviteToken(token);
+        return employeeInviteTokenRepository.findByToken(token)
+                .filter(t -> !t.isExpired())
+                .map(t -> new EmployeeInviteResponse(
+                        t.getEmail(),
+                        t.getUserType(),
+                        t.getStaffRole()))
+                .orElse(null);
     }
 
     // DOCTOR SIGNUP
@@ -606,16 +612,24 @@ public class AuthService implements IAuthService {
     public Doctor signUpDoctor(
             DoctorSignupRequest request) {
 
-        EmployeeInviteResponse invite =
-                jwtService.parseInviteToken(
-                        request.getToken()
-                );
+        EmployeeInviteToken storedInvite =
+                employeeInviteTokenRepository
+                        .findByToken(request.getToken())
+                        .filter(t -> !t.isExpired())
+                        .orElse(null);
 
-        if (invite == null
-                || invite.getUserType()
+        if (storedInvite == null
+                || storedInvite.getUserType()
                 != UserType.DOCTOR) {
             return null;
         }
+
+        EmployeeInviteResponse invite =
+                new EmployeeInviteResponse(
+                        storedInvite.getEmail(),
+                        storedInvite.getUserType(),
+                        storedInvite.getStaffRole()
+                );
 
         if (doctorService.findByEmail(
                 invite.getEmail()).isPresent()) {
@@ -647,7 +661,11 @@ public class AuthService implements IAuthService {
                         .setAccountStatus(UserStatus.ACTIVE)
                         .build();
 
-        return doctorService.create(doctor);
+        Doctor created = doctorService.create(doctor);
+        if (created != null) {
+            employeeInviteTokenRepository.deleteByEmail(invite.getEmail());
+        }
+        return created;
     }
 
     // CLINIC STAFF SIGNUP
@@ -656,16 +674,24 @@ public class AuthService implements IAuthService {
     public ClinicStaff signUpClinicStaff(
             ClinicStaffSignupRequest request) {
 
-        EmployeeInviteResponse invite =
-                jwtService.parseInviteToken(
-                        request.getToken()
-                );
+        EmployeeInviteToken storedInvite =
+                employeeInviteTokenRepository
+                        .findByToken(request.getToken())
+                        .filter(t -> !t.isExpired())
+                        .orElse(null);
 
-        if (invite == null
-                || invite.getUserType()
+        if (storedInvite == null
+                || storedInvite.getUserType()
                 != UserType.CLINIC_STAFF) {
             return null;
         }
+
+        EmployeeInviteResponse invite =
+                new EmployeeInviteResponse(
+                        storedInvite.getEmail(),
+                        storedInvite.getUserType(),
+                        storedInvite.getStaffRole()
+                );
 
         if (invite.getStaffRole() == null) {
             return null;
@@ -705,7 +731,11 @@ public class AuthService implements IAuthService {
                         )
                         .build();
 
-        return clinicStaffService.create(clinicStaff);
+        ClinicStaff created = clinicStaffService.create(clinicStaff);
+        if (created != null) {
+            employeeInviteTokenRepository.deleteByEmail(invite.getEmail());
+        }
+        return created;
     }
 
     // SELF-SERVICE ACCESS REQUEST

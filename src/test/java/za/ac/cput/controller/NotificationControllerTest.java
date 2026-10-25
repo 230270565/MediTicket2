@@ -12,13 +12,14 @@ package za.ac.cput.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import za.ac.cput.domain.Notification;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import za.ac.cput.domain.Appointment;
+import za.ac.cput.domain.Notification;
 import za.ac.cput.domain.PatientTicket;
 import za.ac.cput.domain.enums.ConfirmationStatus;
 import za.ac.cput.domain.enums.NotificationStatus;
@@ -26,30 +27,42 @@ import za.ac.cput.domain.enums.NotificationType;
 import za.ac.cput.domain.enums.UserStatus;
 import za.ac.cput.domain.user.Patient;
 import za.ac.cput.domain.valueObject.Name;
+import za.ac.cput.service.ClinicStaffService;
+import za.ac.cput.service.DoctorService;
 import za.ac.cput.service.NotificationService;
+import za.ac.cput.service.PatientService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(NotificationController.class)
-public class NotificationControllerTest {
+@ExtendWith(MockitoExtension.class)
+class NotificationControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private PatientService patientService;
+
+    @Mock
+    private DoctorService doctorService;
+
+    @Mock
+    private ClinicStaffService clinicStaffService;
+
+    @InjectMocks
+    private NotificationController controller;
+
     private Notification notification;
+    private Notification invalidNotification;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         Name name = new Name.Builder()
                 .setFirstName("John")
                 .setMiddleName("A")
@@ -83,6 +96,7 @@ public class NotificationControllerTest {
                 .setAppointment(appointment)
                 .build();
 
+        // A fully valid notification — passes factory validation.
         notification = new Notification.Builder()
                 .setNotificationId(1)
                 .setNotificationType(NotificationType.EMAIL)
@@ -93,60 +107,127 @@ public class NotificationControllerTest {
                 .setAppointment(appointment)
                 .setNotificationDate(LocalDateTime.now())
                 .build();
+
+        // Missing type + status — factory returns null, triggers 400.
+        invalidNotification = new Notification.Builder()
+                .setNotificationId(2)
+                .build();
     }
 
     @Test
-    void testCreate() throws Exception {
+    void create_returnsOk_whenNotificationIsValid() {
         when(notificationService.create(any(Notification.class))).thenReturn(notification);
-        mockMvc.perform(post("/api/notifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"notificationId\":1}"))
-                .andExpect(status().isOk());
+
+        ResponseEntity<Notification> response = controller.create(notification);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        verify(notificationService, times(1)).create(any(Notification.class));
     }
 
     @Test
-    void testRead() throws Exception {
+    void create_returnsBadRequest_whenNotificationIsInvalid() {
+        ResponseEntity<Notification> response = controller.create(invalidNotification);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        verify(notificationService, never()).create(any());
+    }
+
+    @Test
+    void read_returnsOk_whenFound() {
         when(notificationService.read(1)).thenReturn(notification);
-        mockMvc.perform(get("/api/notifications/1"))
-                .andExpect(status().isOk());
+
+        ResponseEntity<Notification> response = controller.read(1);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(notification, response.getBody());
     }
 
     @Test
-    void testUpdate() throws Exception {
-        when(notificationService.update(any(Notification.class))).thenReturn(notification);
-        mockMvc.perform(put("/api/notifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"notificationId\":1}"))
-                .andExpect(status().isOk());
+    void read_returnsNotFound_whenNotFound() {
+        when(notificationService.read(99)).thenReturn(null);
+
+        ResponseEntity<Notification> response = controller.read(99);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    void testDelete() throws Exception {
+    void update_returnsOk_whenExistingNotificationFound() {
+        when(notificationService.read(1)).thenReturn(notification);
+        when(notificationService.update(notification)).thenReturn(notification);
+
+        ResponseEntity<Notification> response = controller.update(notification);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(notification, response.getBody());
+        verify(notificationService, times(1)).update(notification);
+    }
+
+    @Test
+    void update_returnsNotFound_whenNotificationDoesNotExist() {
+        when(notificationService.read(1)).thenReturn(null);
+
+        ResponseEntity<Notification> response = controller.update(notification);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(notificationService, never()).update(any());
+    }
+
+    @Test
+    void delete_returnsNoContent_whenExists() {
+        when(notificationService.read(1)).thenReturn(notification);
         doNothing().when(notificationService).delete(1);
-        mockMvc.perform(delete("/api/notifications/1"))
-                .andExpect(status().isNoContent());
+
+        ResponseEntity<Void> response = controller.delete(1);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(notificationService, times(1)).delete(1);
     }
 
     @Test
-    void testGetAll() throws Exception {
+    void delete_returnsNotFound_whenNotExists() {
+        when(notificationService.read(99)).thenReturn(null);
+
+        ResponseEntity<Void> response = controller.delete(99);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(notificationService, never()).delete(anyInt());
+    }
+
+    @Test
+    void getAll_returnsOkWithList() {
         when(notificationService.getAll()).thenReturn(List.of(notification));
-        mockMvc.perform(get("/api/notifications"))
-                .andExpect(status().isOk());
+
+        ResponseEntity<List<Notification>> response = controller.getAll();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
     }
 
     @Test
-    void testFindByNotificationStatus() throws Exception {
+    void findByNotificationStatus_returnsOkWithMatchingList() {
         when(notificationService.findByNotificationStatus(NotificationStatus.PENDING))
                 .thenReturn(List.of(notification));
-        mockMvc.perform(get("/api/notifications/status/PENDING"))
-                .andExpect(status().isOk());
+
+        ResponseEntity<List<Notification>> response =
+                controller.findByNotificationStatus(NotificationStatus.PENDING);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        verify(notificationService, times(1)).findByNotificationStatus(NotificationStatus.PENDING);
     }
 
     @Test
-    void testFindByNotificationType() throws Exception {
+    void findByNotificationType_returnsOkWithMatchingList() {
         when(notificationService.findByNotificationType(NotificationType.EMAIL))
                 .thenReturn(List.of(notification));
-        mockMvc.perform(get("/api/notifications/type/EMAIL"))
-                .andExpect(status().isOk());
+
+        ResponseEntity<List<Notification>> response =
+                controller.findByNotificationType(NotificationType.EMAIL);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        verify(notificationService, times(1)).findByNotificationType(NotificationType.EMAIL);
     }
 }

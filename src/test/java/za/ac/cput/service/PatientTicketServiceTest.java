@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +49,8 @@ class PatientTicketServiceTest {
 
     @Test
     void create() {
-        when(repository.save(ticket)).thenReturn(ticket);
+        // create() calls save() twice: once to persist, once after addStatus().
+        when(repository.save(any(PatientTicket.class))).thenReturn(ticket);
 
         PatientTicket created = service.create(ticket);
 
@@ -57,7 +59,7 @@ class PatientTicketServiceTest {
         assertEquals(1, created.getTicketId());
         assertEquals("Headache", created.getTicketDescription());
 
-        verify(repository, times(1)).save(ticket);
+        verify(repository, times(2)).save(any(PatientTicket.class));
     }
 
     @Test

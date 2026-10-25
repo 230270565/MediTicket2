@@ -44,40 +44,48 @@ public class EmailService implements IEmailService {
         this.mailSender = mailSender;
     }
 
+    @Async
     @Override
     public void sendVerificationEmail(String toEmail, String firstName, String token) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("Verify your Mediticket account");
-        message.setText(
-                "Hi " + firstName + ",\n\n" +
-                        "Thanks for signing up to Mediticket. Your verification code is:\n\n" +
-                        token + "\n\n" +
-                        "Enter this code in the app to activate your account. This code will expire in 24 hours.\n\n" +
-                        "If you did not create this account, please ignore this email."
-        );
-
-        mailSender.send(message);
+        String verificationLink = verificationBaseUrl + "?token=" + token;
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(toEmail);
+            message.setSubject("Verify your Mediticket account");
+            message.setText(
+                    "Hi " + firstName + ",\n\n" +
+                            "Thanks for signing up to Mediticket. Click the link below to verify your account and log in:\n\n" +
+                            verificationLink + "\n\n" +
+                            "This link will expire in 24 hours.\n\n" +
+                            "If you did not create this account, please ignore this email."
+            );
+            mailSender.send(message);
+        } catch (Exception e) {
+            logger.warn("Verification email to {} failed: {}", toEmail, e.getMessage());
+        }
     }
 
+    @Async
     @Override
     public void sendEmployeeInviteEmail(String toEmail, UserType userType, String token) {
         String role = userType == UserType.DOCTOR ? "doctor" : "clinic staff";
-
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("You're invited to join MediTicket as a " + role);
-        message.setText(
-                "Hello,\n\n" +
-                        "You have been invited to register as a " + role + " on MediTicket.\n\n" +
-                        "To complete your signup, open the MediTicket desktop app, choose " +
-                        "\"Already have an invite code?\" on the access request screen, and paste in the code below:\n\n" +
-                        token + "\n\n" +
-                        "This code will expire in 48 hours.\n\n" +
-                        "If you did not expect this invitation, please ignore this email."
-        );
-
-        mailSender.send(message);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(toEmail);
+            message.setSubject("You're invited to join MediTicket as a " + role);
+            message.setText(
+                    "Hello,\n\n" +
+                            "You have been invited to register as a " + role + " on MediTicket.\n\n" +
+                            "To complete your signup, open the MediTicket desktop app, choose " +
+                            "\"Already have an invite code?\" on the access request screen, and enter the code below:\n\n" +
+                            token + "\n\n" +
+                            "This code will expire in 48 hours.\n\n" +
+                            "If you did not expect this invitation, please ignore this email."
+            );
+            mailSender.send(message);
+        } catch (Exception e) {
+            logger.warn("Employee invite email to {} failed: {}", toEmail, e.getMessage());
+        }
     }
 
     @Override

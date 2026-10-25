@@ -21,6 +21,7 @@ import za.ac.cput.domain.enums.ConfirmationStatus;
 import za.ac.cput.domain.user.ClinicStaff;
 import za.ac.cput.domain.user.Doctor;
 import za.ac.cput.repository.AppointmentRepository;
+import za.ac.cput.repository.PatientRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -37,6 +38,21 @@ class AppointmentServiceTest {
 
     @Mock
     private AppointmentRepository repository;
+
+    @Mock
+    private DoctorService doctorService;
+
+    @Mock
+    private ClinicStaffService clinicStaffService;
+
+    @Mock
+    private PatientTicketService patientTicketService;
+
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private PatientRepository patientRepository;
 
     @InjectMocks
     private AppointmentService service;

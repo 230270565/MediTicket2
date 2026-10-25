@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class DoctorServiceTest {
@@ -106,15 +107,15 @@ class DoctorServiceTest {
     @Test
     void updateDoctorSuccess() {
 
-        when(doctorRepository.save(doctor))
-                .thenReturn(doctor);
+        when(doctorRepository.findById(1)).thenReturn(Optional.of(doctor));
+        when(doctorRepository.save(any(Doctor.class))).thenReturn(doctor);
 
         Doctor updated = doctorService.update(doctor);
 
         assertNotNull(updated);
         assertEquals("LIC12345", updated.getLicenseNumber());
 
-        verify(doctorRepository).save(doctor);
+        verify(doctorRepository).save(any(Doctor.class));
     }
 
     @Test
