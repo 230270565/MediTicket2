@@ -67,6 +67,9 @@ public class PasswordResetService implements IPasswordResetService {
             return true; // no account, nothing to email
         }
 
+        // Clear any previous reset requests for this email before issuing a new one.
+        repository.deleteByEmail(email);
+
         String rawCode = generateCode();
 
         PasswordResetRequest request = new PasswordResetRequest.Builder()

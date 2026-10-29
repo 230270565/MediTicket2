@@ -11,6 +11,7 @@
 package za.ac.cput.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.EmployeeInviteToken;
 
 import java.util.Optional;
@@ -19,5 +20,6 @@ public interface EmployeeInviteTokenRepository extends JpaRepository<EmployeeInv
 
     Optional<EmployeeInviteToken> findByToken(String token);
 
+    @Transactional
     void deleteByEmail(String email);
 }

@@ -77,7 +77,7 @@ public class EmailService implements IEmailService {
                     "Hello,\n\n" +
                             "You have been invited to register as a " + role + " on MediTicket.\n\n" +
                             "To complete your signup, open the MediTicket desktop app, choose " +
-                            "\"Already have an invite code?\" on the access request screen, and enter the code below:\n\n" +
+                            "\"Already have a token? Enter it here\" on the access request screen, and enter the code below:\n\n" +
                             token + "\n\n" +
                             "This code will expire in 48 hours.\n\n" +
                             "If you did not expect this invitation, please ignore this email."

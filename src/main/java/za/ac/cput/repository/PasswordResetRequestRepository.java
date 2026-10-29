@@ -11,6 +11,7 @@
 package za.ac.cput.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.PasswordResetRequest;
 
 import java.util.List;
@@ -19,4 +20,7 @@ public interface PasswordResetRequestRepository extends JpaRepository<PasswordRe
 
     // Newest reset request first. The service takes the first one.
     List<PasswordResetRequest> findByEmailOrderByCreatedDateDesc(String email);
+
+    @Transactional
+    void deleteByEmail(String email);
 }
